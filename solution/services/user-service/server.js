@@ -1,6 +1,6 @@
 import express, { json } from 'express';
-import { sync } from './config/database';
-import { create, findAll, findByPk } from './models/user';
+import  sequelize  from './db/database.js';
+import User from './db/models/user.js';
 import { createServer } from 'https';
 import { readFileSync } from 'fs';
 
@@ -17,7 +17,7 @@ const options = {
 app.use(json());
 
 // Sync DB
-sync().then(() => {
+sequelize.sync().then(() => {
 	console.log('Database & tables created!');
 });
 
@@ -25,7 +25,7 @@ sync().then(() => {
 app.post('/users', async (req, res) => {
 	try {
 		const { name, email } = req.body;
-		const user = await create({ name, email });
+		const user = await User.create({ name, email });
 		res.status(201).json(user);
 	} catch (err) {
 		res.status(400).json({ error: err.message });
@@ -34,20 +34,20 @@ app.post('/users', async (req, res) => {
 
 // Get all users
 app.get('/users', async (req, res) => {
-	const users = await findAll();
+	const users = await User.findAll();
 	res.json(users);
 });
 
 // Get user by ID
 app.get('/users/:id', async (req, res) => {
-	const user = await findByPk(req.params.id);
+	const user = await User.findByPk(req.params.id);
 	if (!user) return res.status(404).json({ message: 'User not found' });
 	res.json(user);
 });
 
 // Update user
 app.put('/users/:id', async (req, res) => {
-	const user = await findByPk(req.params.id);
+	const user = await User.findByPk(req.params.id);
 	if (!user) return res.status(404).json({ message: 'User not found' });
 
 	const { name, email } = req.body;
@@ -61,7 +61,7 @@ app.put('/users/:id', async (req, res) => {
 
 // Delete user
 app.delete('/users/:id', async (req, res) => {
-	const user = await findByPk(req.params.id);
+	const user = await User.findByPk(req.params.id);
 	if (!user) return res.status(404).json({ message: 'User not found' });
 
 	await user.destroy();

@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { define } from '../config/database';
+import sequalize from '../database.js';
 
-const User = define('User', {
+const User = sequalize.define('User', {
 	name: {
 		type: DataTypes.STRING,
 		allowNull: false
@@ -10,7 +10,7 @@ const User = define('User', {
 		type: DataTypes.STRING,
 		unique: true,
 		allowNull: false
-	}
+  }
 });
 
 export default User;
