@@ -1,24 +1,23 @@
-// server.js
-const express = require('express');
-const sequelize = require('./config/database');
-const User = require('./models/user');
-const https = require('https');
-const fs = require('fs');
+import express, { json } from 'express';
+import { sync } from './config/database';
+import { create, findAll, findByPk } from './models/user';
+import { createServer } from 'https';
+import { readFileSync } from 'fs';
 
 const app = express();
 const port = 8002;
 
 // Load SSL certificate and key
 const options = {
-	key: fs.readFileSync('cert/localhost-key.pem'),
-	cert: fs.readFileSync('cert/localhost-cert.pem')
+	key: readFileSync('cert/localhost-key.pem'),
+	cert: readFileSync('cert/localhost-cert.pem')
 };
 
 // Middleware to parse JSON
-app.use(express.json());
+app.use(json());
 
 // Sync DB
-sequelize.sync().then(() => {
+sync().then(() => {
 	console.log('Database & tables created!');
 });
 
@@ -26,7 +25,7 @@ sequelize.sync().then(() => {
 app.post('/users', async (req, res) => {
 	try {
 		const { name, email } = req.body;
-		const user = await User.create({ name, email });
+		const user = await create({ name, email });
 		res.status(201).json(user);
 	} catch (err) {
 		res.status(400).json({ error: err.message });
@@ -35,20 +34,20 @@ app.post('/users', async (req, res) => {
 
 // Get all users
 app.get('/users', async (req, res) => {
-	const users = await User.findAll();
+	const users = await findAll();
 	res.json(users);
 });
 
 // Get user by ID
 app.get('/users/:id', async (req, res) => {
-	const user = await User.findByPk(req.params.id);
+	const user = await findByPk(req.params.id);
 	if (!user) return res.status(404).json({ message: 'User not found' });
 	res.json(user);
 });
 
 // Update user
 app.put('/users/:id', async (req, res) => {
-	const user = await User.findByPk(req.params.id);
+	const user = await findByPk(req.params.id);
 	if (!user) return res.status(404).json({ message: 'User not found' });
 
 	const { name, email } = req.body;
@@ -62,7 +61,7 @@ app.put('/users/:id', async (req, res) => {
 
 // Delete user
 app.delete('/users/:id', async (req, res) => {
-	const user = await User.findByPk(req.params.id);
+	const user = await findByPk(req.params.id);
 	if (!user) return res.status(404).json({ message: 'User not found' });
 
 	await user.destroy();
@@ -70,6 +69,6 @@ app.delete('/users/:id', async (req, res) => {
 });
 
 // Create HTTPS server
-https.createServer(options, app).listen(port, () => {
+createServer(options, app).listen(port, () => {
 	console.log(`✅ HTTPS user server running at https://localhost:${port}`);
 });
