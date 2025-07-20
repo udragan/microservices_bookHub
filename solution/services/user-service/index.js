@@ -1,18 +1,17 @@
 // server.js
 const express = require('express');
-const bodyParser = require('body-parser');
 const sequelize = require('./config/database');
 const User = require('./models/user');
 const https = require('https');
 const fs = require('fs');
 
 const app = express();
-const port = 5002;
+const port = 8002;
 
 // Load SSL certificate and key
 const options = {
-	key: fs.readFileSync('cert/key.pem'),
-	cert: fs.readFileSync('cert/cert.pem')
+	key: fs.readFileSync('cert/localhost-key.pem'),
+	cert: fs.readFileSync('cert/localhost-cert.pem')
 };
 
 // Middleware to parse JSON

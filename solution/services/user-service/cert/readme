@@ -1,0 +1,30 @@
+- to generate self-signed certificate for localhost using configuration in localhost.cnf call:
+	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout localhost-key.pem -out localhost-cert.pem -config localhost.cnf
+
+- add self-signed certificate for localhost to trusted root:
+	If You're on Windows
+	1. Export or locate the cert
+	Make sure you have the public certificate (e.g., cert.pem or server.crt — not the private key).
+	2. Open Certificate Manager
+		• Press Win + R, type mmc, press Enter
+		• File → Add/Remove Snap-in
+		• Select Certificates, click Add
+		• Choose Computer account, then Local Computer
+	3. Import the cert
+		• Expand: Certificates (Local Computer) → Trusted Root Certification Authorities → Certificates
+		• Right-click Certificates, choose All Tasks → Import
+		• Select your .crt or .pem file
+		• Finish the wizard
+	You’ve now trusted your Node.js cert system-wide.
+
+	If You're on macOS
+	1. Open Keychain Access
+		• Press Cmd + Space, type Keychain Access
+	2. Import the cert
+		• Drag your .pem or .crt file into System → Certificates
+		• Double-click the imported cert
+		• Expand the Trust section
+		• Set "When using this certificate" to Always Trust
+		• Close and enter your password to confirm
+	The cert is now trusted by .NET and other apps.
+
