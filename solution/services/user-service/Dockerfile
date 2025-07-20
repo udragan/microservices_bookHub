@@ -18,4 +18,4 @@ EXPOSE 8002
 # start the app
 RUN chown -R node /usr/src/app
 USER node
-CMD ["node", "index.js"]
+CMD ["node", "server.js"]
