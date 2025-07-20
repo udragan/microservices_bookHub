@@ -22,9 +22,17 @@ public class GatewayController : ControllerBase
 	[HttpGet, HttpPost, HttpPut, HttpDelete, HttpPatch]
 	public async Task<IActionResult> HandleRequest()
 	{
-		var response = await _routingService.ForwardRequestAsync(Request);
+		// Bypass routing if request is for swagger
+		string? path = HttpContext.Request.Path.Value?.ToLower();
 
-		var content = await response.Content.ReadAsStringAsync();
+		if (path != null && (path.StartsWith("/swagger") || path.StartsWith("/favicon")))
+		{
+			return NotFound(); // Let ASP.NET Core serve this natively
+		}
+
+		HttpResponseMessage response = await _routingService.ForwardRequestAsync(Request);
+
+		string content = await response.Content.ReadAsStringAsync();
 		return StatusCode((int)response.StatusCode, content);
 	}
 	#endregion

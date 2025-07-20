@@ -1,33 +1,24 @@
 ﻿namespace ApiGateway.Services;
 
-public class RoutingService
+public class RoutingService(HttpClient httpClient, IConfiguration config)
 {
 	#region Members
-	private readonly HttpClient _httpClient;
-	private readonly IConfiguration _config;
-	#endregion
-
-	#region Constructors
-	public RoutingService(HttpClient httpClient, IConfiguration config)
-	{
-
-		_httpClient = httpClient;
-		_config = config;
-	}
+	private readonly HttpClient _httpClient = httpClient;
+	private readonly IConfiguration _config = config;
 	#endregion
 
 	#region Public methods
 	public async Task<HttpResponseMessage> ForwardRequestAsync(HttpRequest request)
 	{
-		var routeKey = request.Path.Value?.Split('/')[1];
-		var baseUrl = _config[$"Routes:{routeKey}"];
+		string? routeKey = request.Path.Value?.Split('/')[1];
+		string? baseUrl = _config[$"Routes:{routeKey}"];
 
 		if (string.IsNullOrEmpty(baseUrl))
 			return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest) { ReasonPhrase = "Invalid route" };
 
-		var forwardUrl = baseUrl + request.Path.Value?.Substring(routeKey.Length + 1) + request.QueryString;
+		string forwardUrl = baseUrl + request.Path.Value?[(routeKey!.Length + 1)..] + request.QueryString;
 
-		var forwardRequest = new HttpRequestMessage(new HttpMethod(request.Method), forwardUrl)
+		HttpRequestMessage forwardRequest = new HttpRequestMessage(new HttpMethod(request.Method), forwardUrl)
 		{
 			Content = new StreamContent(request.Body)
 		};
