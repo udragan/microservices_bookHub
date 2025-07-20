@@ -22,7 +22,7 @@ sequelize.sync().then(() => {
 });
 
 // Create user
-app.post('/users', async (req, res) => {
+app.post('/', async (req, res) => {
 	try {
 		const { name, email } = req.body;
 		const user = await User.create({ name, email });
@@ -33,20 +33,20 @@ app.post('/users', async (req, res) => {
 });
 
 // Get all users
-app.get('/users', async (req, res) => {
+app.get('/', async (req, res) => {
 	const users = await User.findAll();
 	res.json(users);
 });
 
 // Get user by ID
-app.get('/users/:id', async (req, res) => {
+app.get('/:id', async (req, res) => {
 	const user = await User.findByPk(req.params.id);
 	if (!user) return res.status(404).json({ message: 'User not found' });
 	res.json(user);
 });
 
 // Update user
-app.put('/users/:id', async (req, res) => {
+app.put('/:id', async (req, res) => {
 	const user = await User.findByPk(req.params.id);
 	if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -60,7 +60,7 @@ app.put('/users/:id', async (req, res) => {
 });
 
 // Delete user
-app.delete('/users/:id', async (req, res) => {
+app.delete('/:id', async (req, res) => {
 	const user = await User.findByPk(req.params.id);
 	if (!user) return res.status(404).json({ message: 'User not found' });
 
