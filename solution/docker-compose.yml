@@ -1,0 +1,11 @@
+services:
+  userservice:
+    container_name: bookhub-userservice
+    image: bookhub/userservice
+    build:
+      context: ./services/user-service
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 8002:8002
