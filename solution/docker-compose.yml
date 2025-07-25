@@ -1,11 +1,34 @@
+networks:
+  bookhub-network:
+    name: ${NETWORK_NAME}
+    driver: bridge
+
 services:
+  apigateway:
+    container_name: ${API_CONTAINER_NAME}
+    image: ${API_IMAGE_NAME}
+    build:
+      context: ./api-gateway
+      dockerfile: ./Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${API_ASPNETCORE_ENVIRONMENT}
+      #ASPNETCORE_URLS: ${API_ASPNETCORE_URLS}
+      CERT_PATH: ${API_CERT_PATH}
+      CERT_PASSWORD: ${API_CERT_PASSWORD}
+      PORT: ${API_PORT}
+    ports:
+      - 8000:${API_PORT}
+    networks:
+      - bookhub-network
+
   userservice:
-    container_name: bookhub-userservice
-    image: bookhub/userservice
+    container_name: ${USER_SERVICE_CONTAINER_NAME}
+    image: ${USER_SERVICE_IMAGE_NAME}
     build:
       context: ./services/user-service
       dockerfile: ./Dockerfile
     environment:
-      NODE_ENV: production
-    ports:
-      - 8002:8002
+      NODE_ENV: ${USER_SERVICE_NODE_ENV}
+      PORT: ${USER_SERVICE_PORT}
+    networks:
+      - bookhub-network
