@@ -3,6 +3,32 @@ using ApiGateway.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+	var certPath = Environment.GetEnvironmentVariable("CERT_PATH");
+	var certPassword = Environment.GetEnvironmentVariable("CERT_PASSWORD");
+	if (!string.IsNullOrEmpty(certPath) && !string.IsNullOrEmpty(certPassword))
+	{
+		Console.WriteLine("Certificate loaded");
+
+		if (int.TryParse(Environment.GetEnvironmentVariable("PORT"), out int port))
+		{
+			Console.WriteLine($"parsed port: {port}");
+
+			options.ListenAnyIP(port, listenOptions =>
+			{
+				listenOptions.UseHttps(certPath, certPassword);
+			});
+		}
+		else
+		{
+			Console.WriteLine("Service cannot be started!");
+			return;
+		}
+	}
+});
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();

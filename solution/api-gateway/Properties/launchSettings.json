@@ -17,9 +17,12 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:8000",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development",
+            "CERT_PATH": "dev-certificate.pfx",
+            "CERT_PASSWORD": "devcertificate",
+            "PORT": "8000"
+        }
     }
   }
 }
