@@ -1,17 +1,15 @@
 import express, { json } from 'express';
 import  sequelize  from './db/database.js';
 import User from './db/models/user.js';
-import { createServer } from 'https';
-import { readFileSync } from 'fs';
 
 const app = express();
-const port = 8002;
+const port = process.env.PORT || 7002;
 
 // Load SSL certificate and key
-const options = {
-	key: readFileSync('cert/localhost-key.pem'),
-	cert: readFileSync('cert/localhost-cert.pem')
-};
+// const options = {
+// 	key: readFileSync('cert/localhost-key.pem'),
+// 	cert: readFileSync('cert/localhost-cert.pem')
+// };
 
 // Middleware to parse JSON
 app.use(json());
@@ -34,6 +32,7 @@ app.post('/', async (req, res) => {
 
 // Get all users
 app.get('/', async (req, res) => {
+	console.log("Get all users called");
 	const users = await User.findAll();
 	res.json(users);
 });
@@ -69,6 +68,12 @@ app.delete('/:id', async (req, res) => {
 });
 
 // Create HTTPS server
-createServer(options, app).listen(port, () => {
-	console.log(`✅ HTTPS user server running at https://localhost:${port}`);
+// createServer(options, app).listen(port, '0.0.0.0', () => {
+// 	console.log(`✅ HTTPS user server running at port: ${port}`);
+// });
+
+// Recommendation is to use http inside docker network
+// Use http for now since internal services are not to be exposed outside docker network!
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server is running on port ${port}`);
 });
