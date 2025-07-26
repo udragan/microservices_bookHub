@@ -8,7 +8,7 @@
       "applicationUrl": "http://localhost:8001",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
-            "USER_SERVICE_URL": "http://localhost:8002/internal/verify"
+            "USER_SERVICE_URL": "http://localhost:8002"
         }
     }
   }

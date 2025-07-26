@@ -14,7 +14,7 @@ namespace AuthService.Services.Implementations
 
 		public async Task<(bool success, string? message, User? user)> Verify(LoginRequest request)
 		{
-			string? requestUrl = Environment.GetEnvironmentVariable("USER_SERVICE_URL");
+			string? requestUrl = string.Join("/", Environment.GetEnvironmentVariable("USER_SERVICE_URL"), "internal/verify");
 			string jsonData = JsonSerializer.Serialize(request);
 			StringContent content = new(jsonData, Encoding.UTF8, "application/json");
 
