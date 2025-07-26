@@ -21,6 +21,19 @@ services:
     networks:
       - bookhub-network
 
+  authservice:
+    container_name: ${AUTH_SERVICE_CONTAINER_NAME}
+    image: ${AUTH_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/auth-service
+      dockerfile: ./Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${AUTH_SERVICE_ASPNETCORE_ENVIRONMENT}
+      USER_SERVICE_URL: ${AUTH_SERVICE_USER_SERVICE_URL}
+      PORT: ${AUTH_SERVICE_PORT}     
+    networks:
+      - bookhub-network
+
   userservice:
     container_name: ${USER_SERVICE_CONTAINER_NAME}
     image: ${USER_SERVICE_IMAGE_NAME}
