@@ -1,6 +1,6 @@
 import express, { json } from 'express';
-import  sequelize  from './db/database.js';
-import User from './db/models/user.js';
+import { sequelize, User } from './db/models/index.js';
+import bcrypt from 'bcrypt';
 
 const app = express();
 const port = process.env.PORT || 7002;
@@ -14,16 +14,37 @@ const port = process.env.PORT || 7002;
 // Middleware to parse JSON
 app.use(json());
 
-// Sync DB
-sequelize.sync().then(() => {
-	console.log('Database & tables created!');
+// Sync DB (not needed when using migrations)
+// sequelize.sync().then(() => {
+// 	console.log('Database & tables synced!');
+// });
+
+// internal verify user
+app.post('/internal/verify', async (req, res) => {
+	const { email, password } = req.body;
+	const user = await User.findOne({
+		where: {
+			email: email
+		}
+	});
+	if (!user || !bcrypt.compareSync(password, user.password)) {
+		return res.status(401).send({ error: 'Invalid credentials' });
+	}
+	res.json({
+		id: user.id,
+		user: user.name,
+		email: user.email,
+		role: user.role
+	});
 });
 
 // Create user
 app.post('/', async (req, res) => {
 	try {
-		const { name, email } = req.body;
-		const user = await User.create({ name, email });
+		const { name, email, password, role } = req.body;
+		const hash = await bcrypt.hash(password, 10);
+		console.log(hash);
+		const user = await User.create({ "name": name, "email": email, "password": hash, "role": role });
 		res.status(201).json(user);
 	} catch (err) {
 		res.status(400).json({ error: err.message });
@@ -40,18 +61,22 @@ app.get('/', async (req, res) => {
 // Get user by ID
 app.get('/:id', async (req, res) => {
 	const user = await User.findByPk(req.params.id);
-	if (!user) return res.status(404).json({ message: 'User not found' });
+	if (!user) {
+		return res.status(404).json({ message: 'User not found' });
+	}
 	res.json(user);
 });
 
 // Update user
 app.put('/:id', async (req, res) => {
 	const user = await User.findByPk(req.params.id);
-	if (!user) return res.status(404).json({ message: 'User not found' });
-
-	const { name, email } = req.body;
+	if (!user) {
+		return res.status(404).json({ message: 'User not found' });
+	}
+	const { name, password, role } = req.body;
+	const hash = await bcrypt.hash(password, 10);
 	try {
-		await user.update({ name, email });
+		await user.update({ "name": name, "password": hash, "role": role });
 		res.json(user);
 	} catch (err) {
 		res.status(400).json({ error: err.message });
@@ -61,8 +86,9 @@ app.put('/:id', async (req, res) => {
 // Delete user
 app.delete('/:id', async (req, res) => {
 	const user = await User.findByPk(req.params.id);
-	if (!user) return res.status(404).json({ message: 'User not found' });
-
+	if (!user) {
+		return res.status(404).json({ message: 'User not found' });
+	}
 	await user.destroy();
 	res.json({ message: 'User deleted' });
 });
