@@ -1,12 +1,9 @@
-﻿namespace ApiGateway.Services;
+﻿using System.Text;
 
-public class RoutingService(HttpClient httpClient, IConfiguration config)
+namespace ApiGateway.Services;
+
+public class RoutingService(HttpClient _httpClient, IConfiguration _config)
 {
-	#region Members
-	private readonly HttpClient _httpClient = httpClient;
-	private readonly IConfiguration _config = config;
-	#endregion
-
 	#region Public methods
 	public async Task<HttpResponseMessage> ForwardRequestAsync(HttpRequest request)
 	{
@@ -18,14 +15,20 @@ public class RoutingService(HttpClient httpClient, IConfiguration config)
 
 		string forwardUrl = baseUrl + request.Path.Value?[(routeKey!.Length + 1)..] + request.QueryString;
 
-		HttpRequestMessage forwardRequest = new HttpRequestMessage(new HttpMethod(request.Method), forwardUrl)
+		request.EnableBuffering(); // must be called for further reads!
+		request.Body.Position = 0;
+		using StreamReader reader = new(request.Body, Encoding.UTF8, leaveOpen: true);
+		string jsonData = await reader.ReadToEndAsync();
+		request.Body.Position = 0;
+
+		HttpRequestMessage forwardRequest = new(new HttpMethod(request.Method), forwardUrl)
 		{
-			Content = new StreamContent(request.Body)
+			Content = new StringContent(jsonData, Encoding.UTF8, request.ContentType ?? "application/json")
 		};
 
 		foreach (var header in request.Headers)
 		{
-			forwardRequest.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+			forwardRequest.Headers.TryAddWithoutValidation(header.Key, [.. header.Value]);
 		}
 
 		return await _httpClient.SendAsync(forwardRequest);
