@@ -1,0 +1,6 @@
+@AuthService_HostAddress = http://localhost:8001
+
+GET {{AuthService_HostAddress}}/.well-known/jwks.json
+Accept: application/json
+
+###

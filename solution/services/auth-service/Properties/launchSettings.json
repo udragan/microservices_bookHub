@@ -1,0 +1,15 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:8001",
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development",
+            "USER_SERVICE_URL": "http://localhost:8002/internal/verify"
+        }
+    }
+  }
+}
