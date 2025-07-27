@@ -6,15 +6,12 @@ using AuthService.Models.FromRequests;
 
 namespace AuthService.Services.Implementations
 {
-	public class UserService(HttpClient httpClient) : IUserService
+	public class UserService(IConfiguration _config, HttpClient _httpClient) : IUserService
 	{
-		#region Members
-		private readonly HttpClient _httpClient = httpClient;
-		#endregion
-
 		public async Task<(bool success, string? message, User? user)> Verify(LoginRequest request)
 		{
-			string? requestUrl = string.Join("/", Environment.GetEnvironmentVariable("USER_SERVICE_URL"), "internal/verify");
+			string? userServiceUrl = _config["Services:UserServiceUrl"];
+			string? requestUrl = string.Join("/", userServiceUrl, "internal/verify");
 			string jsonData = JsonSerializer.Serialize(request);
 			StringContent content = new(jsonData, Encoding.UTF8, "application/json");
 

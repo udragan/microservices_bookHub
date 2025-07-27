@@ -3,7 +3,7 @@ import { sequelize, User } from './db/models/index.js';
 import bcrypt from 'bcrypt';
 
 const app = express();
-const port = process.env.PORT || 8002;
+const port = 8002;
 
 // Load SSL certificate and key
 // const options = {
@@ -39,7 +39,7 @@ app.post('/internal/verify', async (req, res) => {
 });
 
 // Create user
-app.post('/', async (req, res) => {
+app.post('/register', async (req, res) => {
 	try {
 		const { name, email, password, role } = req.body;
 		const hash = await bcrypt.hash(password, 10);

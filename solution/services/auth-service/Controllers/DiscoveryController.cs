@@ -4,12 +4,12 @@ namespace AuthService.Controllers;
 
 [ApiController]
 [Route(".well-known/openid-configuration")]
-public class DiscoveryController(IConfiguration config) : ControllerBase
+public class DiscoveryController(IConfiguration _config) : ControllerBase
 {
 	[HttpGet]
 	public IActionResult Get()
 	{
-		string? issuer = config["Jwt:Issuer"];
+		string? issuer = _config["Jwt:Issuer"];
 		return Ok(new
 		{
 			issuer,
