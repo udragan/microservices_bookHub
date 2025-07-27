@@ -5,18 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(options =>
+builder.WebHost.ConfigureKestrel((context, options) =>
 {
-	if (int.TryParse(Environment.GetEnvironmentVariable("PORT"), out int port))
+	if (int.TryParse(context.Configuration["HostPort"], out int port))
 	{
-		Console.WriteLine($"parsed port: {port}");
-
 		options.ListenAnyIP(port);
-	}
-	else
-	{
-		Console.WriteLine("Service cannot be started!");
-		return;
 	}
 });
 

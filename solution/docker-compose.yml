@@ -11,13 +11,13 @@ services:
       context: ./api-gateway
       dockerfile: ./Dockerfile
     environment:
-      ASPNETCORE_ENVIRONMENT: ${API_ASPNETCORE_ENVIRONMENT}
+      ASPNETCORE_ENVIRONMENT: ${API_ENV_ASPNETCORE_ENVIRONMENT}
       #ASPNETCORE_URLS: ${API_ASPNETCORE_URLS}
-      CERT_PATH: ${API_CERT_PATH}
-      CERT_PASSWORD: ${API_CERT_PASSWORD}
-      PORT: ${API_PORT}
+      CERT_PATH: ${API_ENV_CERT_PATH}
+      CERT_PASSWORD: ${API_ENV_CERT_PASSWORD}
+      PORT: ${API_ENV_PORT}
     ports:
-      - 8000:${API_PORT}
+      - 8000:${API_ENV_PORT}
     networks:
       - bookhub-network
 
@@ -28,9 +28,7 @@ services:
       context: ./services/auth-service
       dockerfile: ./Dockerfile
     environment:
-      ASPNETCORE_ENVIRONMENT: ${AUTH_SERVICE_ASPNETCORE_ENVIRONMENT}
-      USER_SERVICE_URL: ${AUTH_SERVICE_USER_SERVICE_URL}
-      PORT: ${AUTH_SERVICE_PORT}     
+      ASPNETCORE_ENVIRONMENT: ${AUTH_SERVICE_ENV_ASPNETCORE_ENVIRONMENT}
     networks:
       - bookhub-network
 
@@ -41,7 +39,6 @@ services:
       context: ./services/user-service
       dockerfile: ./Dockerfile
     environment:
-      NODE_ENV: ${USER_SERVICE_NODE_ENV}
-      PORT: ${USER_SERVICE_PORT}
+      NODE_ENV: ${USER_SERVICE_ENV_NODE_ENV}
     networks:
       - bookhub-network

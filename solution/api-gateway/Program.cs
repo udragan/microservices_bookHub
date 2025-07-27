@@ -33,6 +33,13 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 
+// Jwt config from appsettings
+IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
+string? authority = jwtConfig["Authority"];
+string? audience = jwtConfig["Audience"];
+string? issuer = jwtConfig["Issuer"];
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -43,15 +50,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 	.AddJwtBearer(options =>
 	{
-		options.Authority = "http://localhost:8001";    // base url
-		options.Audience = "bookhub-api-gateway";       // must match 'aud' in jwt
+		options.Authority = authority;                  // base url
+		options.Audience = audience;                    // must match 'aud' in jwt
 		options.RequireHttpsMetadata = false;
 		options.TokenValidationParameters = new TokenValidationParameters
 		{
 			ValidateIssuer = true,
-			ValidIssuer = "http://localhost:8001",      // must match 'iss' in jwt
+			ValidIssuer = issuer,                       // must match 'iss' in jwt
 			ValidateAudience = true,
-			ValidAudience = "bookhub-api-gateway",      // must match 'aud' in jwt
+			ValidAudience = audience,                   // must match 'aud' in jwt
 			ValidateLifetime = true,
 			ValidateIssuerSigningKey = true
 		};

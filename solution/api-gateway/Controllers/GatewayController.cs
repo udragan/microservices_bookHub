@@ -9,7 +9,6 @@ namespace ApiGateway.Controllers;
 public class GatewayController(RoutingService routingService) : ControllerBase
 {
 	#region Public methods
-
 	// Separate specific endpoint for register since it doesnt have authorization by design
 	// THINK ABOUT THIS!!
 	[HttpPost]
@@ -36,13 +35,11 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 		return StatusCode((int)response.StatusCode, content);
 	}
 
-
 	[HttpGet, HttpPost, HttpPut, HttpDelete, HttpPatch]
 	public async Task<IActionResult> HandleRequest()
 	{
 		// 1. Extract the incoming JWT token
-		string? accessToken = Request.Headers["Authorization"]
-			.ToString()
+		string? accessToken = Request.Headers.Authorization.ToString()
 			.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase);
 
 
