@@ -1,4 +1,6 @@
 # main.py
+import app.env
+
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
