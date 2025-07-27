@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace AuthService.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("login")]
 public class AuthController(TokenService _tokenService, IUserService _userService) : ControllerBase
 {
-	[HttpPost("login")]
+	[HttpPost]
 	public async Task<IActionResult> Login([FromBody] LoginRequest request)
 	{
 		if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
