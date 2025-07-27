@@ -29,7 +29,7 @@ RsaSecurityKey rsaKey = new(rsa)
 
 // Add services to the container.
 builder.Services.AddSingleton(rsaKey);
-builder.Services.AddSingleton(new TokenService(rsaKey, "http://bookhub-auth"));
+builder.Services.AddSingleton(new TokenService(rsaKey, "http://localhost:8001"));
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -44,7 +44,6 @@ if (app.Environment.IsDevelopment())
 	app.MapOpenApi();
 }
 
-app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
