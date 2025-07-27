@@ -4,19 +4,19 @@ networks:
     driver: bridge
 
 services:
-  book-service-dev-db:
-    container_name: ${BOOKS_SERVICE_DB_CONTAINER_NAME}
+  bookservice-dev-db:
+    container_name: ${BOOK_SERVICE_DB_CONTAINER_NAME}
     image: postgres:16
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
-      POSTGRES_DB: book-service
+      POSTGRES_DB: books
     ports:
-      - "${BOOKS_SERVICE_ENV_PORT}:5432"
+      - "${BOOK_SERVICE_ENV_PORT}:5432"
     volumes:
-      - book-service_data:/var/lib/postgresql/data
+      - bookservice_data:/var/lib/postgresql/data
     networks:
       - bookhub-network
 
 volumes:
-  book-service_data:
+  bookservice_data:
