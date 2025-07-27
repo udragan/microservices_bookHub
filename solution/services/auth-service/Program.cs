@@ -29,7 +29,7 @@ RsaSecurityKey rsaKey = new(rsa)
 
 // Add services to the container.
 builder.Services.AddSingleton(rsaKey);
-builder.Services.AddSingleton(new TokenService(rsaKey, "http://localhost:8001"));
+builder.Services.AddSingleton(new TokenService(rsaKey, builder.Configuration["Jwt:Issuer"]!));
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
