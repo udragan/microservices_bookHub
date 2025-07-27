@@ -2,7 +2,7 @@ Set-Location -Path $PSScriptRoot
 
 # stop app containers
 docker compose -p bookhub -f docker-compose.yml down 
-docker compose -p bookhub-debug -f docker-compose.debug.yml down
+docker compose -p bookhub-dev -f docker-compose-dev-storage.yml --env-file .env.dev down
 
 # remove app images
 $Prefix = "bookhub"
