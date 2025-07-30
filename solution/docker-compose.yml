@@ -53,6 +53,7 @@ services:
       - bookservice-db
     environment:
       DATABASE_URL: ${BOOK_SERVICE_DB_CONNECTION_STRING}
+      JWKS_URL: ${BOOK_SERVICE_JWKS_URL}
     networks:
       - bookhub-network
 
