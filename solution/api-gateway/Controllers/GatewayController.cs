@@ -17,9 +17,9 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 	public async Task<IActionResult> Register()
 	{
 		HttpResponseMessage response = await routingService.ForwardRequestAsync(Request);
-
 		string content = await response.Content.ReadAsStringAsync();
-		return StatusCode((int)response.StatusCode, content);
+
+		return Content(content, response.Content.Headers.ContentType?.ToString() ?? "application/json");
 	}
 
 	// Separate specific endpoint for register since it doesnt have authorization by design
@@ -30,9 +30,9 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 	public async Task<IActionResult> Login()
 	{
 		HttpResponseMessage response = await routingService.ForwardRequestAsync(Request);
-
 		string content = await response.Content.ReadAsStringAsync();
-		return StatusCode((int)response.StatusCode, content);
+
+		return Content(content, response.Content.Headers.ContentType?.ToString() ?? "application/json");
 	}
 
 	[HttpGet, HttpPost, HttpPut, HttpDelete, HttpPatch]
@@ -53,9 +53,9 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 		}
 
 		HttpResponseMessage response = await routingService.ForwardRequestAsync(Request);
-
 		string content = await response.Content.ReadAsStringAsync();
-		return StatusCode((int)response.StatusCode, content);
+
+		return Content(content, response.Content.Headers.ContentType?.ToString() ?? "application/json");
 	}
 	#endregion
 }

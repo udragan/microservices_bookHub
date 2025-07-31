@@ -25,7 +25,7 @@ services:
     image: ${AUTH_SERVICE_IMAGE_NAME}
     build:
       context: ./services/auth-service
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile-debug
     environment:
       ASPNETCORE_ENVIRONMENT: ${AUTH_SERVICE_ENV_ASPNETCORE_ENVIRONMENT}
     networks:
