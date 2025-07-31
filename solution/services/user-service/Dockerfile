@@ -8,8 +8,6 @@ RUN npm install --production --silent && mv node_modules ../
 
 COPY . .
 
-EXPOSE ${PORT}
-
 RUN chown -R node /usr/src/app
 USER node
 CMD ["node", "server.js"]
