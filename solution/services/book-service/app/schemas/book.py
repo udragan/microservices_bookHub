@@ -1,6 +1,6 @@
 # this represents input json 
 from pydantic import BaseModel
 
-class BookCreate(BaseModel):
+class BookBody(BaseModel):
     name: str
     author: str

@@ -15,7 +15,8 @@
                 "--port", "8003",
                 "--reload"
             ],
-            "jinja": true
+            "jinja": true,
+            "justMyCode": false  // make sure this is false to break in external files
         }
     ]
 }
