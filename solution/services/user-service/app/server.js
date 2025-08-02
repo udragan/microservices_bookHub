@@ -1,6 +1,9 @@
 import express, { json } from 'express';
-import { sequelize, User } from './db/models/index.js';
 import bcrypt from 'bcrypt';
+
+import { sequelize, User } from './db/models/index.js';
+import jwtCheck from './auth/authorization.js';
+
 
 const app = express();
 const port = 8002;
@@ -19,6 +22,8 @@ app.use(json());
 // 	console.log('Database & tables synced!');
 // });
 
+
+// endpoints ###########################
 // internal verify user
 app.post('/internal/verify', async (req, res) => {
 	const { email, password } = req.body;
@@ -38,7 +43,8 @@ app.post('/internal/verify', async (req, res) => {
 	});
 });
 
-// Create user
+
+// Register user
 app.post('/register', async (req, res) => {
 	try {
 		const { name, email, password, role } = req.body;
@@ -52,14 +58,17 @@ app.post('/register', async (req, res) => {
 });
 
 // Get all users
-app.get('/', async (req, res) => {
+app.get('/', jwtCheck,  async (req, res) => {
 	console.log("Get all users called");
+
+    console.log(req.user);
+
 	const users = await User.findAll();
 	res.json(users);
 });
 
 // Get user by ID
-app.get('/:id', async (req, res) => {
+app.get('/:id', jwtCheck, async (req, res) => {
 	const user = await User.findByPk(req.params.id);
 	if (!user) {
 		return res.status(404).json({ message: 'User not found' });
@@ -68,7 +77,7 @@ app.get('/:id', async (req, res) => {
 });
 
 // Update user
-app.put('/:id', async (req, res) => {
+app.put('/:id', jwtCheck, async (req, res) => {
 	const user = await User.findByPk(req.params.id);
 	if (!user) {
 		return res.status(404).json({ message: 'User not found' });
@@ -84,7 +93,7 @@ app.put('/:id', async (req, res) => {
 });
 
 // Delete user
-app.delete('/:id', async (req, res) => {
+app.delete('/:id', jwtCheck, async (req, res) => {
 	const user = await User.findByPk(req.params.id);
 	if (!user) {
 		return res.status(404).json({ message: 'User not found' });
