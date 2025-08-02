@@ -1,0 +1,7 @@
+- run migrations using squelize
+    navigate to app/db folder
+    > npx sequelize-cli db:migrate
+
+- run server
+    navigate to root (user-service)
+    > node ./app/server.js
