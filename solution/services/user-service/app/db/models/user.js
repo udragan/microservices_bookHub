@@ -19,17 +19,11 @@ export default (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
-		role: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			defaultValue: 'user',
-			validate: {
-				isIn: {
-					args: [['admin', 'moderator', 'user']],
-					msg: 'Role must be one of: admin, moderator, user'
-				}
-			}
-		}
+        role: {
+            type: DataTypes.ENUM("admin", "user", "moderator"), 
+            allowNull: false,
+            defaultValue: "user"
+        }
 	}, {
 		tableName: 'Users', // Make sure this matches the name used in the migration
 		timestamps: true    // Required if you have createdAt / updatedAt

@@ -1,14 +1,10 @@
 {
   "development": {
-    "dialect": "sqlite",
-    "storage": "database.sqlite"
-  },
-  "test": {
-    "dialect": "sqlite",
-    "storage": "database.sqlite"
-  },
-  "production": {
-    "dialect": "sqlite",
-    "storage": "database.sqlite"
+    "username": "dev",
+    "password": "dev",
+    "database": "users",
+    "host": "localhost",
+    "port": "6002",
+    "dialect": "postgres"
   }
 }

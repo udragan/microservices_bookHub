@@ -4,6 +4,20 @@ networks:
     driver: bridge
 
 services:
+  userservice-dev-db:
+    container_name: ${USER_SERVICE_DB_CONTAINER_NAME}
+    image: postgres:16
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: users
+    ports:
+      - "6002:5432"
+    volumes:
+      - userservice_data:/var/lib/postgresql/data
+    networks:
+      - bookhub-network
+
   bookservice-dev-db:
     container_name: ${BOOK_SERVICE_DB_CONTAINER_NAME}
     image: postgres:16
@@ -18,5 +32,8 @@ services:
     networks:
       - bookhub-network
 
+  
+
 volumes:
+  userservice_data:
   bookservice_data:

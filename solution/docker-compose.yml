@@ -44,6 +44,18 @@ services:
     networks:
       - bookhub-network
 
+  userservice-db:
+    container_name: ${USER_SERVICE_DB_CONTAINER_NAME}
+    image: postgres:16
+    environment:
+      POSTGRES_USER: dock
+      POSTGRES_PASSWORD: dock
+      POSTGRES_DB: users
+    volumes:
+      - userservice_data:/var/lib/postgresql/data
+    networks:
+      - bookhub-network
+
   bookservice:
     container_name: ${BOOK_SERVICE_CONTAINER_NAME}
     image: ${BOOK_SERVICE_IMAGE_NAME}
@@ -71,5 +83,5 @@ services:
       - bookhub-network
 
 volumes:
+  userservice_data:
   bookservice_data:
-

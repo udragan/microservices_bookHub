@@ -22,11 +22,6 @@ export async function up(queryInterface, Sequelize) {
 			type: Sequelize.STRING,
 			allowNull: false
 		},
-		role: {
-			type: Sequelize.ENUM('admin', 'moderator', 'user'),
-			defaultValue: 'user',
-			allowNull: false
-		},
 		createdAt: {
 			allowNull: false,
 			type: Sequelize.DATE
