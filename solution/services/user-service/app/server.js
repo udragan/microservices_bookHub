@@ -1,12 +1,16 @@
 import express, { json } from 'express';
 import bcrypt from 'bcrypt';
 
-import { sequelize, User } from './db/models/index.js';
+import { db } from './db/models/index.js'
+
+//import { sequelize, User } from './db/models/index.js';
 import jwtCheck from './auth/authorization.js';
 
 
 const app = express();
 const port = 8002;
+
+const User = db.User;
 
 // Load SSL certificate and key
 // const options = {
@@ -109,6 +113,12 @@ app.delete('/:id', jwtCheck, async (req, res) => {
 
 // Recommendation is to use http inside docker network
 // Use http for now since internal services are not to be exposed outside docker network!
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(port, '0.0.0.0', async () => {
+    console.log(`Server is running on port ${port}`);
+    try {
+        await db.sequelize.authenticate();
+        console.log("Database connected.");
+    } catch (error) {
+        console.error("DB connection error:", error);
+    }
 });
