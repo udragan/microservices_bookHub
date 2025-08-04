@@ -38,8 +38,12 @@ services:
     build:
       context: ./services/user-service
       dockerfile: ./Dockerfile
+    depends_on:
+      userservice-db:
+        condition: service_healthy
     environment:
       NODE_ENV: ${USER_SERVICE_ENV_NODE_ENV}
+      DATABASE_URL: ${USER_SERVICE_DB_CONNECTION_STRING}
       JWKS_URL: ${JWKS_URL}
     networks:
       - bookhub-network
@@ -47,6 +51,11 @@ services:
   userservice-db:
     container_name: ${USER_SERVICE_DB_CONTAINER_NAME}
     image: postgres:16
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dock -d users"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
     environment:
       POSTGRES_USER: dock
       POSTGRES_PASSWORD: dock
@@ -63,7 +72,8 @@ services:
       context: ./services/book-service
       dockerfile: ./Dockerfile
     depends_on:
-      - bookservice-db
+      bookservice-db:
+        condition: service_healthy
     environment:
       DATABASE_URL: ${BOOK_SERVICE_DB_CONNECTION_STRING}
       JWKS_URL: ${JWKS_URL}
@@ -73,6 +83,11 @@ services:
   bookservice-db:
     container_name: ${BOOK_SERVICE_DB_CONTAINER_NAME}
     image: postgres:16
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dock -d books"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
     environment:
       POSTGRES_USER: dock
       POSTGRES_PASSWORD: dock
