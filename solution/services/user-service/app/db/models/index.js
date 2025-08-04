@@ -1,15 +1,11 @@
 import { Sequelize, DataTypes } from 'sequelize';
 
-import { DB_NAME, DB_USER, DB_PASS, DB_HOST, DB_PORT } from '../../env.js';
+import { DATABASE_URL } from '../../env.js';
 import userModel from './user.js';
 
-const sequelize = new Sequelize(
-    DB_NAME,
-    DB_USER,
-    DB_PASS,
+console.log('INFO:  Using DATABASE_URL: ', DATABASE_URL);
+const sequelize = new Sequelize(DATABASE_URL,    
     {
-        host: DB_HOST,
-        port: DB_PORT,
         dialect: "postgres",
         logging: console.log
     }

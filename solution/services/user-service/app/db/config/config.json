@@ -1,10 +1,10 @@
 {
   "development": {
-    "username": "dev",
-    "password": "dev",
-    "database": "users",
-    "host": "localhost",
-    "port": "6002",
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres"
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
     "dialect": "postgres"
   }
 }

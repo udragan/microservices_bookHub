@@ -1,14 +1,15 @@
 import express, { json } from 'express';
 import bcrypt from 'bcrypt';
+import { exec } from 'child_process';
+import util from 'util';
 
 import { db } from './db/models/index.js'
-
-//import { sequelize, User } from './db/models/index.js';
 import jwtCheck from './auth/authorization.js';
 
 
 const app = express();
 const port = 8002;
+const execPromise = util.promisify(exec);
 
 const User = db.User;
 
@@ -20,12 +21,6 @@ const User = db.User;
 
 // Middleware to parse JSON
 app.use(json());
-
-// Sync DB (not needed when using migrations)
-// sequelize.sync().then(() => {
-// 	console.log('Database & tables synced!');
-// });
-
 
 // endpoints ###########################
 // internal verify user
@@ -105,20 +100,41 @@ app.delete('/:id', jwtCheck, async (req, res) => {
 	await user.destroy();
 	res.json({ message: 'User deleted' });
 });
+// #####################################
 
-// Create HTTPS server
-// createServer(options, app).listen(port, '0.0.0.0', () => {
-// 	console.log(`✅ HTTPS user server running at port: ${port}`);
-// });
+async function runMigrations() {
+    try {
+        console.log('📦 Running migrations...');
+        const { stdout, stderr } = await execPromise(
+            'npx sequelize-cli db:migrate --config app/db/config/config.json --migrations-path app/db/migrations'
+        );
+        console.log(stdout);
+        if (stderr) {
+            console.error(stderr);
+        }
+        console.log('✅ Migrations finished.');
+    } catch (err) {
+        console.error('❌ Migration error:', err);
+        process.exit(1);
+    }
+}
 
-// Recommendation is to use http inside docker network
-// Use http for now since internal services are not to be exposed outside docker network!
-app.listen(port, '0.0.0.0', async () => {
-    console.log(`Server is running on port ${port}`);
+async function startServer() {
     try {
         await db.sequelize.authenticate();
-        console.log("Database connected.");
-    } catch (error) {
-        console.error("DB connection error:", error);
+        console.log('✅ DB connected');
+
+        await runMigrations();
+
+        // Recommendation is to use http inside docker network
+        // Use http for now since internal services are not to be exposed outside docker network!
+        app.listen(port, '0.0.0.0', async () => {
+        console.log(`✅ Server listening on port ${port}`);
+        });
+    } catch (err) {
+        console.error('❌ Server startup failed:', err);
+        process.exit(1);
     }
-});
+}
+
+startServer();
