@@ -4,6 +4,15 @@ networks:
     driver: bridge
 
 services:
+  rabbitMQ-broker:
+    container_name: ${RABBITMQ_BROKER_CONTAINER_NAME}
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - bookhub-network
+
   userservice-dev-db:
     container_name: ${USER_SERVICE_DB_CONTAINER_NAME}
     image: postgres:16
@@ -32,7 +41,6 @@ services:
     networks:
       - bookhub-network
 
-  
 
 volumes:
   userservice_data:

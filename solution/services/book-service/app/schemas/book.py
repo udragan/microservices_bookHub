@@ -1,6 +1,16 @@
-# this represents input json 
 from pydantic import BaseModel
 
-class BookBody(BaseModel):
-    name: str
+# this represents input json 
+class BookRequestBody(BaseModel):
+    title: str
     author: str
+
+# this is sent message to broker
+class BookSchema(BaseModel):
+    id: int
+    title: str
+    author: str
+
+    model_config = {
+        "from_attributes": True
+    }

@@ -1,10 +1,10 @@
 import os
+import httpx
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from jose.exceptions import JWTError, ExpiredSignatureError
 from typing import Annotated
-import httpx
 from cachetools import TTLCache
 from jose.utils import base64url_decode
 from cryptography.hazmat.primitives.asymmetric import rsa
