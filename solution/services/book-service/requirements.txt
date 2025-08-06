@@ -2,7 +2,9 @@ fastapi
 click
 uvicorn[standard]
 sqlalchemy
+psycopg2-binary
 asyncpg>=0.27.0
+alembic
 python-dotenv
 python-jose[cryptography]
 cachetools

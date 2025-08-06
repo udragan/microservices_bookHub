@@ -1,25 +1,30 @@
 import app.env
 
+import asyncio
 from fastapi import FastAPI, Depends, HTTPException, status
+from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-import pika
 
+from app.db.migrate import run_migrations
 from app.auth.authorization import JwtUser, get_current_user, is_admin
-from app.db.database import AsyncSessionLocal, engine, Base
-from app.models.book import Book
+from app.db.database import AsyncSessionLocal
+from app.db.models.book import Book
 from app.schemas.book import BookRequestBody, BookSchema
 from app.pubsub.publisher import publish_message
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+     # Alembic is sync, so run it in a thread pool
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(None, run_migrations)
+    yield
+    print("👋 App shutdown.")
 
-# Create tables on startup (for dev/demo only)
-@app.on_event("startup")
-async def on_startup():
-    async with engine.begin() as conn:
-      	await conn.run_sync(Base.metadata.create_all)
-          
+app = FastAPI(lifespan=lifespan)
+
+
 # Dependency to get DB session
 async def get_db():
     async with AsyncSessionLocal() as session:

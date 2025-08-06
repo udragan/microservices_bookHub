@@ -54,6 +54,7 @@ services:
       NODE_ENV: ${USER_SERVICE_ENV_NODE_ENV}
       DATABASE_URL: ${USER_SERVICE_DB_CONNECTION_STRING}
       JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
     networks:
       - bookhub-network
 
@@ -85,7 +86,9 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: ${BOOK_SERVICE_DB_CONNECTION_STRING}
+      DATABASE_URL_MIGRATION: ${BOOK_SERVICE_DB_MIGRATION_CONNECTION_STRING}
       JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
     networks:
       - bookhub-network
