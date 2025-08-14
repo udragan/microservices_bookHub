@@ -1,5 +1,6 @@
 import app.env
 
+import logging
 import asyncio
 from fastapi import FastAPI, Depends, HTTPException, status
 from contextlib import asynccontextmanager
@@ -13,6 +14,11 @@ from app.db.models.book import Book
 from app.schemas.book import BookRequestBody, BookSchema
 from app.pubsub.publisher import publish_message
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s:  %(name)s: %(message)s",
+    handlers=[logging.StreamHandler()]
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
