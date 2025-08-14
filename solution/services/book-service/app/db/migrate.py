@@ -13,7 +13,6 @@ def run_migrations():
     """
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     alembic_path = os.path.join(base_dir, "../alembic.ini")
-    #print(f"INFO    alembic.ini path: {alembic_path}")
     alembic_logger.info(f"alembic.ini path: {alembic_path}")
 
     alembic_cfg = Config(alembic_path)
