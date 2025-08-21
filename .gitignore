@@ -400,3 +400,10 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+
+
+
+
+# services/review-service
+**/review-service/app.exe
