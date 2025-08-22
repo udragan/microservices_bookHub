@@ -24,7 +24,7 @@ function getKey(header, callback) {
 }
 
 // Middleware to validate JWT
-function jwtCheck(req, res, next) {
+function jwtAuthMiddleware(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
     if (!token) return res.status(401).json({ error: 'Missing token' });
 
@@ -39,4 +39,4 @@ function jwtCheck(req, res, next) {
     });
 }
 
-export default jwtCheck;
+export default jwtAuthMiddleware;

@@ -4,7 +4,7 @@ import { exec } from 'child_process';
 import util from 'util';
 
 import { db } from './db/models/index.js'
-import jwtCheck from './auth/authorization.js';
+import jwtAuthMiddleware from './auth/authorization.js';
 
 
 const app = express();
@@ -57,7 +57,7 @@ app.post('/register', async (req, res) => {
 });
 
 // Get all users
-app.get('/', jwtCheck,  async (req, res) => {
+app.get('/', jwtAuthMiddleware,  async (req, res) => {
 	console.log("Get all users called");
 
     console.log(req.user);
@@ -67,7 +67,7 @@ app.get('/', jwtCheck,  async (req, res) => {
 });
 
 // Get user by ID
-app.get('/:id', jwtCheck, async (req, res) => {
+app.get('/:id', jwtAuthMiddleware, async (req, res) => {
 	const user = await User.findByPk(req.params.id);
 	if (!user) {
 		return res.status(404).json({ message: 'User not found' });
@@ -76,7 +76,7 @@ app.get('/:id', jwtCheck, async (req, res) => {
 });
 
 // Update user
-app.put('/:id', jwtCheck, async (req, res) => {
+app.put('/:id', jwtAuthMiddleware, async (req, res) => {
 	const user = await User.findByPk(req.params.id);
 	if (!user) {
 		return res.status(404).json({ message: 'User not found' });
@@ -92,7 +92,7 @@ app.put('/:id', jwtCheck, async (req, res) => {
 });
 
 // Delete user
-app.delete('/:id', jwtCheck, async (req, res) => {
+app.delete('/:id', jwtAuthMiddleware, async (req, res) => {
 	const user = await User.findByPk(req.params.id);
 	if (!user) {
 		return res.status(404).json({ message: 'User not found' });
