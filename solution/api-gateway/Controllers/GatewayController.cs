@@ -43,7 +43,6 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 			.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase);
 
 
-
 		// Bypass routing if request is for swagger
 		string? path = HttpContext.Request.Path.Value?.ToLower();
 
