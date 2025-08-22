@@ -110,6 +110,23 @@ services:
     networks:
       - bookhub-network
 
+  reviewservice:
+    container_name: ${REVIEW_SERVICE_CONTAINER_NAME}
+    image: ${REVIEW_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/review-service
+      dockerfile: ./Dockerfile
+    #depends_on:
+     # reviewservice-db:
+      #  condition: service_healthy
+    environment:
+      DATABASE_URL: ${REVIEW_SERVICE_DB_CONNECTION_STRING}
+      DATABASE_URL_MIGRATION: ${REVIEW_SERVICE_DB_MIGRATION_CONNECTION_STRING}
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+    networks:
+      - bookhub-network
 
 volumes:
   userservice_data:

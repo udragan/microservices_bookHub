@@ -13,7 +13,7 @@ import (
 func main() {
 	err := godotenv.Load("app/.env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("WARNING:	Error loading .env file, using injected env variables!")
 	}
 
 	// Start RabbitMQ consumer in a goroutine
