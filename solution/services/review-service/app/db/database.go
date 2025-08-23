@@ -20,6 +20,10 @@ var Client *mongo.Client
 
 func ensureUserExists() {
 	DATABASE_URL := os.Getenv("DATABASE_URL")
+	DATABASE_USERNAME := os.Getenv("DATABASE_USERNAME")
+	DATABASE_PASSWORD := os.Getenv("DATABASE_PASSWORD")
+	DATABASE_NAME := os.Getenv("DATABASE_NAME")
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -31,12 +35,12 @@ func ensureUserExists() {
 	}
 	defer adminClient.Disconnect(ctx)
 
-	adminDB := adminClient.Database("reviews")
+	adminDB := adminClient.Database(DATABASE_NAME)
 
 	// Check if the user already exists
 	var result bson.M
 	err = adminDB.RunCommand(ctx, bson.D{
-		{Key: "usersInfo", Value: bson.D{{Key: "user", Value: "dev"}, {Key: "db", Value: "reviews"}}},
+		{Key: "usersInfo", Value: bson.D{{Key: "user", Value: DATABASE_USERNAME}, {Key: "db", Value: DATABASE_NAME}}},
 	}).Decode(&result)
 
 	if err != nil {
@@ -46,20 +50,20 @@ func ensureUserExists() {
 	// Check if the user exists based on the command output
 	users, ok := result["users"].(bson.A)
 	if ok && len(users) > 0 {
-		log.Println("MongoDB user 'dev' already exists. Skipping creation.")
+		log.Printf("MongoDB user '%s' already exists. Skipping creation.\n", DATABASE_USERNAME)
 		return
 	}
 
-	log.Println("MongoDB user 'dev' not found. Creating user...")
+	log.Printf("MongoDB user '%s' not found. Creating user...\n", DATABASE_USERNAME)
 
 	// Create the user
 	createCmd := bson.D{
-		{Key: "createUser", Value: "dev"}, // import from env
-		{Key: "pwd", Value: "dev"},        // import from env
+		{Key: "createUser", Value: DATABASE_USERNAME},
+		{Key: "pwd", Value: DATABASE_PASSWORD},
 		{Key: "roles", Value: bson.A{
 			bson.M{
 				"role": "readWrite",
-				"db":   "reviews",
+				"db":   DATABASE_NAME,
 			},
 		}},
 	}
@@ -68,7 +72,7 @@ func ensureUserExists() {
 	if err != nil {
 		log.Fatal("Failed to create MongoDB user:", err)
 	}
-	log.Println("MongoDB user 'dev' created successfully.")
+	log.Printf("MongoDB user '%s' created successfully.\n", DATABASE_USERNAME)
 }
 
 func ConnectDB() {
@@ -103,6 +107,8 @@ func ConnectDB() {
 func RunMigrations() {
 	DATABASE_URL := os.Getenv("DATABASE_URL")
 	DATABASE_NAME := os.Getenv("DATABASE_NAME")
+
+	log.Println("📦 Running migrations...")
 
 	m, err := migrate.New(
 		"file://app/db/migrations",

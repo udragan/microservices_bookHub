@@ -116,18 +116,38 @@ services:
     build:
       context: ./services/review-service
       dockerfile: ./Dockerfile
-    #depends_on:
-     # reviewservice-db:
-      #  condition: service_healthy
+    depends_on:
+     reviewservice-db:
+       condition: service_healthy
     environment:
       DATABASE_URL: ${REVIEW_SERVICE_DB_CONNECTION_STRING}
-      DATABASE_URL_MIGRATION: ${REVIEW_SERVICE_DB_MIGRATION_CONNECTION_STRING}
+      DATABASE_USERNAME: ${REVIEW_SERVICE_DB_USERNAME}
+      DATABASE_PASSWORD: ${REVIEW_SERVICE_DB_PASSWORD}
+      DATABASE_NAME: ${REVIEW_SERVICE_DB_NAME}
       JWKS_URL: ${JWKS_URL}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
     networks:
       - bookhub-network
 
+  reviewservice-db:
+    container_name: ${REVIEW_SERVICE_DB_CONTAINER_NAME}
+    image: mongo:latest
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${REVIEW_SERVICE_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${REVIEW_SERVICE_DB_PASSWORD}
+    volumes:
+      - reviewservice_data:/data/db
+    networks:
+      - bookhub-network
+
 volumes:
   userservice_data:
   bookservice_data:
+  reviewservice_data:
