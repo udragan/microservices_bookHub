@@ -22,4 +22,4 @@ def run_migrations():
 
     alembic_logger.info("📦 Running Alembic migrations...")
     command.upgrade(alembic_cfg, "head")
-    alembic_logger.info("✅ Migrations complete.") # this is printed only when app is shutting down, investigate!
+    alembic_logger.info("✅ Migrations complete.")

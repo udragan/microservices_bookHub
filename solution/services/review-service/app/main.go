@@ -9,6 +9,7 @@ import (
 
 	"bookhub/review-service/app/auth"
 	"bookhub/review-service/app/db"
+	"bookhub/review-service/app/pubsub"
 )
 
 func main() {
@@ -20,11 +21,9 @@ func main() {
 	db.ConnectDB()
 	db.RunMigrations()
 
-	// Start RabbitMQ consumer in a goroutine
-	//go startRabbitMQConsumer()
+	go pubsub.StartBookConsumer()
 
 	router := mux.NewRouter()
-
 	router.Use(auth.JWTAuthMiddleware)
 
 	// endpoints #######################
@@ -33,6 +32,6 @@ func main() {
 
 	// #################################
 
-	log.Println("✅ Server started on :8004")
+	log.Println("✅ Server listening on port 8004")
 	http.ListenAndServe(":8004", router)
 }

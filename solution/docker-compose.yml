@@ -90,6 +90,7 @@ services:
       JWKS_URL: ${JWKS_URL}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_BOOKS_EXCHANGE: ${RABBITMQ_BOOKS_EXCHANGE}
     networks:
       - bookhub-network
 
@@ -127,6 +128,7 @@ services:
       JWKS_URL: ${JWKS_URL}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_BOOKS_EXCHANGE: ${RABBITMQ_BOOKS_EXCHANGE}
     networks:
       - bookhub-network
 
