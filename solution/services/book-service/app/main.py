@@ -25,8 +25,9 @@ async def lifespan(app: FastAPI):
      # Alembic is sync, so run it in a thread pool
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, run_migrations)
+    print("✅ Server listening on port 8003")
     yield
-    print("👋 App shutdown.")
+    print("👋 Server shutdown.")
 
 app = FastAPI(lifespan=lifespan)
 
