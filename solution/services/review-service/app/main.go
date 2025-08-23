@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"bookhub/review-service/app/auth"
+	"bookhub/review-service/app/db"
 )
 
 func main() {
@@ -15,6 +16,9 @@ func main() {
 	if err != nil {
 		log.Println("WARNING:	Error loading .env file, using injected env variables!")
 	}
+
+	db.ConnectDB()
+	db.RunMigrations()
 
 	// Start RabbitMQ consumer in a goroutine
 	//go startRabbitMQConsumer()

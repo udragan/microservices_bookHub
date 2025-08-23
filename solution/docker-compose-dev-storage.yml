@@ -41,7 +41,21 @@ services:
     networks:
       - bookhub-network
 
+  reviewservice-dev-db:
+    container_name: ${REVIEW_SERVICE_DB_CONTAINER_NAME}
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: dev
+      MONGO_INITDB_ROOT_PASSWORD: dev
+    ports:
+      - "6004:27017"
+    volumes:
+      - reviewservice_data:/data/db
+    networks:
+      - bookhub-network
+
 
 volumes:
   userservice_data:
   bookservice_data:
+  reviewservice_data:
