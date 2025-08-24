@@ -71,6 +71,7 @@ func StartBookConsumer() {
 		switch msg.RoutingKey {
 		case "book.created":
 			log.Printf("📘 Book Created: %s", msg.Body)
+			HandleBookCreated(msg)
 		case "book.deleted":
 			log.Printf("🗑️ Book Deleted: %s", msg.Body)
 		default:
