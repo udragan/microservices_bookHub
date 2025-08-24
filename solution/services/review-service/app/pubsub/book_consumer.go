@@ -74,6 +74,7 @@ func StartBookConsumer() {
 			HandleBookCreated(msg)
 		case "book.deleted":
 			log.Printf("🗑️ Book Deleted: %s", msg.Body)
+			HandleBookDeleted(msg)
 		default:
 			log.Printf("⚠️ Unknown event [%s]: %s", msg.RoutingKey, msg.Body)
 		}

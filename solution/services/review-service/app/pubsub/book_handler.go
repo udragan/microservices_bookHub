@@ -32,13 +32,33 @@ func HandleBookCreated(msg amqp091.Delivery) {
 
 	if mongo.IsDuplicateKeyError(err) {
 		log.Printf("WARNING:	Book with id: %d already exists!", book.BookId)
-		return
 	} else if err != nil {
 		log.Printf("WARNING:	Save failed for book with id: %d", book.BookId)
+	} else {
+		log.Printf("INFO:	Book with id: %d added.", book.BookId)
+	}
+}
+
+func HandleBookDeleted(msg amqp091.Delivery) {
+	book, err := unmarshal(msg)
+	if err != nil {
+		log.Printf("Failed to parse message body: %v", err)
 		return
 	}
+	collection := db.Client.Database(DATABASE_NAME).Collection(COLLECTION_NAME)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	log.Printf("INFO:	Book with id: %d added.", book.BookId)
+	result, err := collection.DeleteOne(ctx, book)
+
+	if err != nil {
+		log.Printf("WARNING:	Delete failed for book with id: %d. %v", book.BookId, err)
+		return
+	} else if result.DeletedCount == 0 {
+		log.Printf("INFO:	No book with id: %d, nothing was deleted.", book.BookId)
+	} else {
+		log.Printf("INFO:	Book with id: %d deleted.", book.BookId)
+	}
 }
 
 func unmarshal(msg amqp091.Delivery) (modelsdb.Book, error) {
