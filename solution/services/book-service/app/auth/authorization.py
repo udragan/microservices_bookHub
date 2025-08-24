@@ -20,31 +20,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="not-used")
 # Cache for JWKS
 jwks_cache = TTLCache(maxsize=1, ttl=3600)
 
-async def get_jwks():
-    if 'keys' not in jwks_cache:
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(JWKS_URL)
-                response.raise_for_status()
-                jwks_cache['keys'] = response.json()['keys']
-                logging.info(f"JWKS_KEYS={jwks_cache['keys']}")
-
-        except httpx.RequestError as e:
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Could not connect to JWKS endpoint: {e}")
-        
-        except httpx.HTTPStatusError as e:
-            raise HTTPException(status_code=e.response.status_code, detail=f"JWKS endpoint returned error: {e.response.text}")
-        
-        except Exception as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Unexpected error: {e}")
-    return jwks_cache['keys']
-
-def get_signing_key(jwks, kid: str):
-    for key in jwks:
-        if key["kid"] == kid:
-            return key
-    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token: unknown key ID")
-
+# public funcs ################
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> JwtUser:
     try:
         # Decode header to get `kid`
@@ -81,6 +57,35 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Jwt
     except JWTError as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Token invalid: {str(e)}")
 
+def is_admin(user: JwtUser) -> bool:
+    return user.role == 'admin'
+###############################
+
+async def get_jwks():
+    if 'keys' not in jwks_cache:
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(JWKS_URL)
+                response.raise_for_status()
+                jwks_cache['keys'] = response.json()['keys']
+                logging.info(f"JWKS_KEYS={jwks_cache['keys']}")
+
+        except httpx.RequestError as e:
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Could not connect to JWKS endpoint: {e}")
+        
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(status_code=e.response.status_code, detail=f"JWKS endpoint returned error: {e.response.text}")
+        
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Unexpected error: {e}")
+    return jwks_cache['keys']
+
+def get_signing_key(jwks, kid: str):
+    for key in jwks:
+        if key["kid"] == kid:
+            return key
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token: unknown key ID")
+
 def build_rsa_key(jwk):
     n = int.from_bytes(base64url_decode(jwk['n'].encode('utf-8')), 'big')
     e = int.from_bytes(base64url_decode(jwk['e'].encode('utf-8')), 'big')
@@ -94,6 +99,3 @@ def build_rsa_key(jwk):
     #     format=serialization.PublicFormat.SubjectPublicKeyInfo
     # )
     # return pem
-
-def is_admin(user: JwtUser) -> bool:
-    return user.role == 'admin'

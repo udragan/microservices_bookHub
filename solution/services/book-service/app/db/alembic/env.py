@@ -7,7 +7,7 @@ from alembic import context
 
 # import your models explicitly
 from app.db.database import Base
-from app.db.models.book import Book
+from app.db.modelsdb.book import Book
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

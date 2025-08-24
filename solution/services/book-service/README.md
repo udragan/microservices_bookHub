@@ -12,3 +12,6 @@ source venv/bin/activate 	// linux
     before creating migration make sure that all the needed models are imported explicitly into db/alembic/env.py !!
 > alembic revision --autogenerate -m "migration description"
 > alembic upgrade head
+
+
+- all models MUST be imported explicitly in db/alembic/env.py
