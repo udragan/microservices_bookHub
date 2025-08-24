@@ -11,10 +11,10 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "app.main:app",
-                "--port", "8003",
-                "--reload"
+                "app.main:app",              
+                "--port", "8003"
             ],
+            "cwd": "${workspaceFolder}",
             "jinja": true,
             "justMyCode": false  // make sure this is false to break in external files
         }

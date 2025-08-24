@@ -1,3 +1,4 @@
+import logging
 import app.env
 import os
 from logging.config import fileConfig
@@ -14,13 +15,12 @@ config = context.config
 
 # Override the DB URL using environment variable
 DATABASE_URL_MIGRATION = os.getenv("DATABASE_URL_MIGRATION")
-print(f"INFO:   DATABASE_URL_MIGRATION={DATABASE_URL_MIGRATION}")
 if DATABASE_URL_MIGRATION:
     config.set_main_option("sqlalchemy.url", DATABASE_URL_MIGRATION)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-if config.config_file_name is not None:
+if not logging.getLogger().hasHandlers() and config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # add your model's MetaData object here

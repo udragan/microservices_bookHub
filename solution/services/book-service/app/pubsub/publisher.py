@@ -4,11 +4,8 @@ import json
 
 RABBITMQ_HOST=os.getenv("RABBITMQ_HOST")
 RABBITMQ_BOOKS_EXCHANGE=os.getenv("RABBITMQ_BOOKS_EXCHANGE")
-print(f"INFO:   RABBITMQ_HOST={RABBITMQ_HOST}")
-print(f"INFO:   RABBITMQ_BOOKS_EXCHANGE={RABBITMQ_BOOKS_EXCHANGE}")
 
-
-def publish_message(routing_key: str, message: dict):
+def publish_message(routing_key: str, message: str):
     connection = pika.BlockingConnection(pika.ConnectionParameters(RABBITMQ_HOST))
     channel = connection.channel()
 
@@ -20,6 +17,6 @@ def publish_message(routing_key: str, message: dict):
     channel.basic_publish(
         exchange=RABBITMQ_BOOKS_EXCHANGE,
         routing_key=routing_key,
-        body=json.dumps(message)
+        body=message
     )
     connection.close()

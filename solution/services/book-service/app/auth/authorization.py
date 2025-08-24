@@ -1,3 +1,4 @@
+import logging
 import os
 import httpx
 from fastapi import Depends, HTTPException, status
@@ -15,8 +16,6 @@ JWT_AUDIENCE=os.getenv("JWT_AUDIENCE")
 JWKS_URL = os.getenv("JWKS_URL")
 ALGORITHM = "RS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="not-used")
-print(f"INFO:   JWKS_URL={JWKS_URL}")
-print(f"INFO:   JWT_AUDIENCE={JWT_AUDIENCE}")
 
 # Cache for JWKS
 jwks_cache = TTLCache(maxsize=1, ttl=3600)
@@ -28,7 +27,7 @@ async def get_jwks():
                 response = await client.get(JWKS_URL)
                 response.raise_for_status()
                 jwks_cache['keys'] = response.json()['keys']
-                print(f"INFO:   JWKS_KEYS={jwks_cache['keys']}")
+                logging.info(f"JWKS_KEYS={jwks_cache['keys']}")
 
         except httpx.RequestError as e:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Could not connect to JWKS endpoint: {e}")
@@ -73,7 +72,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Jwt
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing subject in token")
         
         jwtUser = JwtUser(id=user_id, name=user_name, email=user_email, role=user_role)
-        print(f"INFO:   Token valid: {jwtUser}")
+        logging.info(f"INFO:   Token valid: {jwtUser}")
         return jwtUser
     
     except ExpiredSignatureError:
