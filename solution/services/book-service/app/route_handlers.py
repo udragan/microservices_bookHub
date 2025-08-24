@@ -7,7 +7,6 @@ from app.db.modelsdb.book import Book
 from app.pubsub.publisher import publish_message
 from app.schemas.book import BookRequestBody, BookSchema
 
-
 async def create_book(book: BookRequestBody,
         jwt: JwtUser,  
         db: AsyncSession):
@@ -38,3 +37,6 @@ async def delete_book(bookId: int,
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Entity with id: {bookId} not found!")
     await db.delete(item)
     await db.commit()
+
+    brokerBook = BookSchema.model_validate(item)
+    publish_message("book.deleted", brokerBook.model_dump_json())
