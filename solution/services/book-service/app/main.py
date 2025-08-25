@@ -8,9 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.migrate import run_migrations
 from app.db.database import AsyncSessionLocal
-from app.auth.authorization import JwtUser, get_current_user
-from app.route_handlers import create_book, delete_book, get_all_books
-from app.schemas.book import BookRequestBody
+from app.auth.authorization import JwtUser, get_current_user, get_service_auth
+from app.route_handlers import create_book, delete_book, get_all_books, internal_get_books_snapshot
+from app.models.book import BookRequestBody
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,7 +45,13 @@ async def get_all(db_sesison: AsyncSession = Depends(get_db)):
 async def delete(bookId: int,
         jwt: JwtUser = Depends(get_current_user),
         db: AsyncSession = Depends(get_db)):    
-    return await delete_book(bookId ,jwt,db)
+    return await delete_book(bookId, jwt, db)
+
+
+@app.get("/internal/snapshot", status_code=status.HTTP_200_OK)
+async def internal_get_snapshot(jwt = Depends(get_service_auth),
+        db: AsyncSession = Depends(get_db)):
+    return await internal_get_books_snapshot(db)
 
 #######################################
 
