@@ -12,10 +12,11 @@ services:
       dockerfile: ./Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: ${API_ENV_ASPNETCORE_ENVIRONMENT}
-      #ASPNETCORE_URLS: ${API_ASPNETCORE_URLS}
       CERT_PATH: ${API_ENV_CERT_PATH}
       CERT_PASSWORD: ${API_ENV_CERT_PASSWORD}
       PORT: ${API_ENV_PORT}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      SHARED_SECRET: ${SHARED_SECRET}
     ports:
       - ${API_ENV_PORT}:8000
     networks:
