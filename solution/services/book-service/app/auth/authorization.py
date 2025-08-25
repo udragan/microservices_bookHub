@@ -59,6 +59,46 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Jwt
 
 def is_admin(user: JwtUser) -> bool:
     return user.role == 'admin'
+
+async def get_service_auth(token: Annotated[str, Depends(oauth2_scheme)]):
+    try:
+        # Decode header to get `kid`
+        unverified_header = jwt.get_unverified_header(token)
+        kid = unverified_header.get("kid")
+        if not kid:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token header")
+
+        # Get signing key from JWKS
+        jwks = await get_jwks()
+        signing_key = get_signing_key(jwks, kid)
+
+        # Convert to public key format for `python-jose`
+        #public_key = jwt.construct_rsa_public_key(signing_key)
+         # Build PEM-formatted public key
+        public_key = build_rsa_key(signing_key)
+
+        # Decode token
+        payload = jwt.decode(token, public_key, algorithms=[ALGORITHM], audience=JWT_AUDIENCE)
+        requesting_service = payload.get("sub")
+        target_service = payload.get("azp")
+        if not requesting_service:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing subject in token")
+        elif not target_service:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing target service in token")
+        elif target_service != "book-service": #TODO_faja: put this somewhere (each service should have global property NAME??)
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Target service invalid")
+
+        logging.info(f"INFO:   Token valid.")
+        return None
+    
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+    
+    except JWTError as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Token invalid: {str(e)}")
+
+
+
 ###############################
 
 async def get_jwks():

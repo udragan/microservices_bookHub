@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.authorization import JwtUser, is_admin
 from app.db.modelsdb.book import Book
 from app.pubsub.publisher import publish_message
-from app.schemas.book import BookRequestBody, BookSchema
+from app.models.book import BookRequestBody
+from app.models.dtos.book_dto import BookDto
 
 async def create_book(book: BookRequestBody,
         jwt: JwtUser,  
@@ -18,14 +19,15 @@ async def create_book(book: BookRequestBody,
     await db.commit()
     await db.refresh(new_book)
 
-    brokerBook = BookSchema.model_validate(new_book)
+    brokerBook = BookDto.model_validate(new_book)
     publish_message("book.created", brokerBook.model_dump_json())
     
     return new_book
 
 async def get_all_books(db_session: AsyncSession):
     result = await db_session.execute(select(Book))
-    return result.scalars().all()
+    dtos = [BookDto.model_validate(item) for item in result.scalars().all()]
+    return dtos
 
 async def delete_book(bookId: int,
         jwt: JwtUser ,
@@ -38,5 +40,11 @@ async def delete_book(bookId: int,
     await db.delete(item)
     await db.commit()
 
-    brokerBook = BookSchema.model_validate(item)
+    brokerBook = BookDto.model_validate(item)
     publish_message("book.deleted", brokerBook.model_dump_json())
+
+async def internal_get_books_snapshot(db_session: AsyncSession):
+    # TODO_faja: create a slim dto for sync instead of entire Book
+    result = await db_session.execute(select(Book))
+    dtos = [BookDto.model_validate(item) for item in result.scalars().all()]
+    return dtos
