@@ -16,7 +16,7 @@ public class TokenService(RsaSecurityKey _key, string _issuer)
 			new Claim("role", user.Role)
 		];
 
-		SigningCredentials credentials = new SigningCredentials(_key, SecurityAlgorithms.RsaSha256);
+		SigningCredentials credentials = new(_key, SecurityAlgorithms.RsaSha256);
 
 		JwtSecurityToken token = new(
 			issuer: _issuer,
@@ -37,7 +37,7 @@ public class TokenService(RsaSecurityKey _key, string _issuer)
 			new Claim(JwtRegisteredClaimNames.Azp, targetServiceName)
 		];
 
-		SigningCredentials credentials = new SigningCredentials(_key, SecurityAlgorithms.RsaSha256);
+		SigningCredentials credentials = new(_key, SecurityAlgorithms.RsaSha256);
 
 		JwtSecurityToken token = new(
 			issuer: _issuer,

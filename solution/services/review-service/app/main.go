@@ -10,18 +10,22 @@ import (
 	"bookhub/review-service/app/auth"
 	"bookhub/review-service/app/db"
 	"bookhub/review-service/app/pubsub"
+	"bookhub/review-service/app/workers"
 )
 
-func main() {
+func init() {
 	err := godotenv.Load("app/.env")
 	if err != nil {
 		log.Println("WARNING:	Error loading .env file, using injected env variables!")
 	}
+}
 
+func main() {
 	db.ConnectDB()
 	db.RunMigrations()
 
 	go pubsub.StartBookConsumer()
+	go workers.StartBookSync()
 
 	router := mux.NewRouter()
 	router.Use(auth.JWTAuthMiddleware)
