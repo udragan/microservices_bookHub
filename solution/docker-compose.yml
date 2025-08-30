@@ -16,7 +16,6 @@ services:
       CERT_PASSWORD: ${API_ENV_CERT_PASSWORD}
       PORT: ${API_ENV_PORT}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
-      SHARED_SECRET: ${SHARED_SECRET}
     ports:
       - ${API_ENV_PORT}:8000
     networks:
@@ -25,6 +24,11 @@ services:
   rabbitMQ-broker:
     container_name: ${RABBITMQ_BROKER_CONTAINER_NAME}
     image: rabbitmq:3-management
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - 5672:5672
       - 15672:15672
@@ -39,6 +43,7 @@ services:
       dockerfile: ./Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: ${AUTH_SERVICE_ENV_ASPNETCORE_ENVIRONMENT}
+      SHARED_SECRET: ${SHARED_SECRET}
     networks:
       - bookhub-network
 
@@ -85,6 +90,8 @@ services:
     depends_on:
       bookservice-db:
         condition: service_healthy
+      rabbitMQ-broker:
+        condition: service_healthy
     environment:
       DATABASE_URL: ${BOOK_SERVICE_DB_CONNECTION_STRING}
       DATABASE_URL_MIGRATION: ${BOOK_SERVICE_DB_MIGRATION_CONNECTION_STRING}
@@ -119,15 +126,20 @@ services:
       context: ./services/review-service
       dockerfile: ./Dockerfile
     depends_on:
-     reviewservice-db:
-       condition: service_healthy
+      reviewservice-db:
+        condition: service_healthy
+      rabbitMQ-broker:
+        condition: service_healthy
     environment:
       DATABASE_URL: ${REVIEW_SERVICE_DB_CONNECTION_STRING}
       DATABASE_USERNAME: ${REVIEW_SERVICE_DB_USERNAME}
       DATABASE_PASSWORD: ${REVIEW_SERVICE_DB_PASSWORD}
       DATABASE_NAME: ${REVIEW_SERVICE_DB_NAME}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      BOOK_SERVICE_URL: ${BOOK_SERVICE_URL}
       JWKS_URL: ${JWKS_URL}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
+      SHARED_SECRET: ${SHARED_SECRET}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
       RABBITMQ_BOOKS_EXCHANGE: ${RABBITMQ_BOOKS_EXCHANGE}
     networks:
