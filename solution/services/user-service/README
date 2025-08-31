@@ -1,7 +1,0 @@
-- run migrations using squelize
-   in project root folder
-    > npx sequelize-cli db:migrate --config app/db/config/config.json --migrations-path app/db/migrations
-
-- run server
-    navigate to root (user-service)
-    > node ./app/server.js
