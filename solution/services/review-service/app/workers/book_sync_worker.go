@@ -6,11 +6,11 @@ import (
 	"encoding/json"
 	"io"
 	"log"
-	"math"
 	"net/http"
 	"os"
 	"time"
 
+	"bookhub/review-service/app/common"
 	"bookhub/review-service/app/db"
 	"bookhub/review-service/app/models"
 
@@ -19,34 +19,33 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var MAX_DELAY = time.Duration(600 * time.Second) // 10 minutes
-
 func StartBookSync() {
-	log.Println("Book Sync - started...")
+	log.Println("[INFO] Book Sync - started...")
 	attempt := 0
 
 	for {
-		time.Sleep(getExponentialBackoffDelay(attempt))
+		time.Sleep(common.GetExponentialBackoffDelay(attempt))
 		attempt++
 		token, err := getServiceToken()
 		if err != nil {
-			log.Println("Book Sync - Error getting service token:", err)
+			log.Println("[WARN] Book Sync - ⚠️ Error getting service token:", err)
 			continue
 		}
+		log.Println("[INFO] Book Sync - Service token:", token.AccessToken)
 		data, err := getBooksSnapshot(token)
 		if err != nil {
-			log.Println("Book Sync - Error getting books snapshot:", err)
+			log.Println("[WARN] Book Sync - ⚠️ Error getting books snapshot:", err)
 			continue
 		}
 		saveCount, deleteCount, err := saveBooksSnapshot(data)
 		if err != nil {
-			log.Println("Book Sync - Error saving books snapshot to db:", err)
+			log.Println("[WARN] Book Sync - ⚠️ Error saving books snapshot to db:", err)
 			continue
 		}
-		log.Printf("Book Sync - Saved %d new books and deleted %d books from sync.\n", saveCount, deleteCount)
+		log.Printf("[INFO] Book Sync - Saved %d new books and deleted %d books from sync.\n", saveCount, deleteCount)
 		break
 	}
-	log.Println("Book Sync - Done")
+	log.Println("[INFO] Book Sync - ✅ Done")
 }
 
 func getServiceToken() (models.ServiceTokenResponse, error) {
@@ -70,7 +69,6 @@ func getServiceToken() (models.ServiceTokenResponse, error) {
 	if err != nil {
 		return token, err
 	}
-	log.Println("Book Sync - Service token:", string(tokenResponseBody))
 	err = json.Unmarshal([]byte(tokenResponseBody), &token)
 	if err != nil {
 		return token, err
@@ -128,12 +126,4 @@ func convertToMongoWriteModel(items []models.Book) []mongo.WriteModel {
 		}
 	}
 	return mongoModels
-}
-
-func getExponentialBackoffDelay(attempt int) time.Duration {
-	delay := time.Duration(math.Pow(2, float64(attempt))) * time.Second
-	if delay > MAX_DELAY {
-		return MAX_DELAY
-	}
-	return delay
 }
