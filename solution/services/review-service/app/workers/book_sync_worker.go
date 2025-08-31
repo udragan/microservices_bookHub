@@ -22,7 +22,7 @@ import (
 var MAX_DELAY = time.Duration(600 * time.Second) // 10 minutes
 
 func StartBookSync() {
-	log.Println("Syncing books...")
+	log.Println("Book Sync - started...")
 	attempt := 0
 
 	for {
@@ -30,23 +30,23 @@ func StartBookSync() {
 		attempt++
 		token, err := getServiceToken()
 		if err != nil {
-			log.Println("Error getting service token:", err)
+			log.Println("Book Sync - Error getting service token:", err)
 			continue
 		}
 		data, err := getBooksSnapshot(token)
 		if err != nil {
-			log.Println("Error getting books snapshot:", err)
+			log.Println("Book Sync - Error getting books snapshot:", err)
 			continue
 		}
-		saveCount, err := saveBooksSnapshot(data)
+		saveCount, deleteCount, err := saveBooksSnapshot(data)
 		if err != nil {
-			log.Println("Error saving books snapshot to db:", err)
+			log.Println("Book Sync - Error saving books snapshot to db:", err)
 			continue
 		}
-		log.Printf("Saved %d new books from sync.\n", saveCount)
+		log.Printf("Book Sync - Saved %d new books and deleted %d books from sync.\n", saveCount, deleteCount)
 		break
 	}
-	log.Println("Book sync Done")
+	log.Println("Book Sync - Done")
 }
 
 func getServiceToken() (models.ServiceTokenResponse, error) {
@@ -70,7 +70,7 @@ func getServiceToken() (models.ServiceTokenResponse, error) {
 	if err != nil {
 		return token, err
 	}
-	log.Println("Token:", string(tokenResponseBody))
+	log.Println("Book Sync - Service token:", string(tokenResponseBody))
 	err = json.Unmarshal([]byte(tokenResponseBody), &token)
 	if err != nil {
 		return token, err
@@ -93,7 +93,7 @@ func getBooksSnapshot(token models.ServiceTokenResponse) ([]models.Book, error) 
 	return books, err
 }
 
-func saveBooksSnapshot(items []models.Book) (int64, error) {
+func saveBooksSnapshot(items []models.Book) (int64, int64, error) {
 	DATABASE_NAME := os.Getenv("DATABASE_NAME")
 	COLLECTION_NAME := "books"
 	mongoModels := convertToMongoWriteModel(items)
@@ -102,20 +102,27 @@ func saveBooksSnapshot(items []models.Book) (int64, error) {
 	defer cancel()
 	bulkOptions := options.BulkWrite().SetOrdered(false)
 	result, err := collection.BulkWrite(ctx, mongoModels, bulkOptions)
-	return result.UpsertedCount, err
+	return result.UpsertedCount, result.DeletedCount, err
 }
 
 func convertToMongoWriteModel(items []models.Book) []mongo.WriteModel {
 	var mongoModels []mongo.WriteModel
 	currentTime := time.Now()
 	for _, item := range items {
-		filter := bson.M{"bookId": item.ID}
-		update := bson.M{"$setOnInsert": bson.M{"bookId": item.ID, "timestamp": currentTime}}
-		model := mongo.NewUpdateOneModel().
-			SetFilter(filter).
-			SetUpdate(update).
-			SetUpsert(true)
-		mongoModels = append(mongoModels, model)
+		if item.IsDeleted {
+			filter := bson.M{"bookId": item.ID}
+			model := mongo.NewDeleteOneModel().
+				SetFilter(filter)
+			mongoModels = append(mongoModels, model)
+		} else {
+			filter := bson.M{"bookId": item.ID}
+			update := bson.M{"$setOnInsert": bson.M{"bookId": item.ID, "timestamp": currentTime}}
+			model := mongo.NewUpdateOneModel().
+				SetFilter(filter).
+				SetUpdate(update).
+				SetUpsert(true)
+			mongoModels = append(mongoModels, model)
+		}
 	}
 	return mongoModels
 }
