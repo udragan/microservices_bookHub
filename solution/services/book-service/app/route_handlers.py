@@ -14,20 +14,18 @@ async def create_book(book: BookRequestBody,
     if not is_admin(jwt):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient permissions!")
     
-    new_book = Book(title=book.title, author=book.author)
-    db.add(new_book)
+    result = Book(title=book.title, author=book.author)
+    db.add(result)
     await db.commit()
-    await db.refresh(new_book)
-
-    brokerBook = BookDto.model_validate(new_book)
-    publish_message("book.created", brokerBook.model_dump_json())
-    
-    return new_book
+    await db.refresh(result)
+    publish_message("book.created", BookDto.model_validate(result).model_dump_json())    
+    return result
 
 async def get_all_books(db_session: AsyncSession):
-    result = await db_session.execute(select(Book))
-    dtos = [BookDto.model_validate(item) for item in result.scalars().all()]
-    return dtos
+    items = await db_session.execute(select(Book)
+        .where(Book.isDeleted == False))
+    result = [BookDto.model_validate(item) for item in items.scalars().all()]
+    return result
 
 async def delete_book(bookId: int,
         jwt: JwtUser ,
@@ -37,7 +35,7 @@ async def delete_book(bookId: int,
     item = await db.get(Book, bookId)
     if item is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Entity with id: {bookId} not found!")
-    await db.delete(item)
+    item.isDeleted = True
     await db.commit()
 
     brokerBook = BookDto.model_validate(item)
@@ -45,6 +43,6 @@ async def delete_book(bookId: int,
 
 async def internal_get_books_snapshot(db_session: AsyncSession):
     # TODO_faja: create a slim dto for sync instead of entire Book
-    result = await db_session.execute(select(Book))
-    dtos = [BookDto.model_validate(item) for item in result.scalars().all()]
-    return dtos
+    items = await db_session.execute(select(Book))
+    result = [BookDto.model_validate(item) for item in items.scalars().all()]
+    return result
