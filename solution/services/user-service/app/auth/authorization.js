@@ -3,7 +3,6 @@ import pkg from 'jsonwebtoken';
 const { verify } = pkg;
 import jwksClient from 'jwks-rsa';
 
-console.log('INFO:  Using JWKS_URL: ', JWKS_URL);
 const client = jwksClient({
     jwksUri: JWKS_URL
 });
