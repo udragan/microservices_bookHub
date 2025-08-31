@@ -25,7 +25,6 @@ export async function registerUser(request, response) {
     try {
 		const { name, email, password, role } = request.body;
 		const hash = await bcrypt.hash(password, 10);
-		console.log(hash);
 		const user = await User.create({ "name": name, "email": email, "password": hash, "role": role });
 		response.status(201).json(user);
 	} catch (err) {
