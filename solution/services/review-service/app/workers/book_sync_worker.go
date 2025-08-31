@@ -28,30 +28,24 @@ func StartBookSync() {
 	for {
 		time.Sleep(getExponentialBackoffDelay(attempt))
 		attempt++
-
 		token, err := getServiceToken()
 		if err != nil {
 			log.Println("Error getting service token:", err)
 			continue
 		}
-
 		data, err := getBooksSnapshot(token)
 		if err != nil {
 			log.Println("Error getting books snapshot:", err)
 			continue
 		}
-
 		saveCount, err := saveBooksSnapshot(data)
-
 		if err != nil {
 			log.Println("Error saving books snapshot to db:", err)
 			continue
 		}
-
 		log.Printf("Saved %d new books from sync.\n", saveCount)
 		break
 	}
-
 	log.Println("Book sync Done")
 }
 

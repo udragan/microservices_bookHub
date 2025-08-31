@@ -1,105 +1,26 @@
 import express, { json } from 'express';
-import bcrypt from 'bcrypt';
 import { exec } from 'child_process';
 import util from 'util';
 
 import { db } from './db/models/index.js'
 import jwtAuthMiddleware from './auth/authorization.js';
-
+import { verifyCredentials, registerUser, getAll, getById, updateUser, deleteUser } from './route-handlers.js'
 
 const app = express();
 const port = 8002;
 const execPromise = util.promisify(exec);
-
-const User = db.User;
-
-// Load SSL certificate and key
-// const options = {
-// 	key: readFileSync('cert/localhost-key.pem'),
-// 	cert: readFileSync('cert/localhost-cert.pem')
-// };
 
 // Middleware to parse JSON
 app.use(json());
 
 // endpoints ###########################
 // internal verify user
-app.post('/internal/verify', async (req, res) => {
-	const { email, password } = req.body;
-	const user = await User.findOne({
-		where: {
-			email: email
-		}
-	});
-	if (!user || !bcrypt.compareSync(password, user.password)) {
-		return res.status(401).send({ error: 'Invalid credentials' });
-	}
-	res.json({
-		id: user.id,
-		name: user.name,
-		email: user.email,
-		role: user.role
-	});
-});
-
-
-// Register user
-app.post('/register', async (req, res) => {
-	try {
-		const { name, email, password, role } = req.body;
-		const hash = await bcrypt.hash(password, 10);
-		console.log(hash);
-		const user = await User.create({ "name": name, "email": email, "password": hash, "role": role });
-		res.status(201).json(user);
-	} catch (err) {
-		res.status(400).json({ error: err.message });
-	}
-});
-
-// Get all users
-app.get('/', jwtAuthMiddleware,  async (req, res) => {
-	console.log("Get all users called");
-
-    console.log(req.user);
-
-	const users = await User.findAll();
-	res.json(users);
-});
-
-// Get user by ID
-app.get('/:id', jwtAuthMiddleware, async (req, res) => {
-	const user = await User.findByPk(req.params.id);
-	if (!user) {
-		return res.status(404).json({ message: 'User not found' });
-	}
-	res.json(user);
-});
-
-// Update user
-app.put('/:id', jwtAuthMiddleware, async (req, res) => {
-	const user = await User.findByPk(req.params.id);
-	if (!user) {
-		return res.status(404).json({ message: 'User not found' });
-	}
-	const { name, password, role } = req.body;
-	const hash = await bcrypt.hash(password, 10);
-	try {
-		await user.update({ "name": name, "password": hash, "role": role });
-		res.json(user);
-	} catch (err) {
-		res.status(400).json({ error: err.message });
-	}
-});
-
-// Delete user
-app.delete('/:id', jwtAuthMiddleware, async (req, res) => {
-	const user = await User.findByPk(req.params.id);
-	if (!user) {
-		return res.status(404).json({ message: 'User not found' });
-	}
-	await user.destroy();
-	res.json({ message: 'User deleted' });
-});
+app.post('/internal/verify', verifyCredentials);
+app.post('/register', registerUser);
+app.get('/', jwtAuthMiddleware,  getAll);
+app.get('/:id', jwtAuthMiddleware, getById);
+app.put('/:id', jwtAuthMiddleware, updateUser);
+app.delete('/:id', jwtAuthMiddleware, deleteUser);
 // #####################################
 
 async function runMigrations() {
