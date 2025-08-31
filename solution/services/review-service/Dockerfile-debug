@@ -1,0 +1,26 @@
+# --- Build stage ---
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN go build -gcflags="all=-N -l" -o main ./app
+
+# --- Run stage ---
+FROM golang:1.25
+
+# Install Delve
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+WORKDIR /root
+
+# copy migration files
+COPY --from=builder /app/app/db/migrations ./app/db/migrations/
+COPY --from=builder /app/main .
+
+EXPOSE 8004 2345
+
+CMD ["dlv", "exec", "./main", "--headless", "--listen=:2345", "--api-version=2", "--accept-multiclient"]
