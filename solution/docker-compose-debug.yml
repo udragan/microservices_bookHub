@@ -2,15 +2,43 @@ services:
   apigateway:
     build:
       dockerfile: ./Dockerfile-debug
+    ports:
+      - 8000:8000
 
   authservice:
     build:
       dockerfile: ./Dockerfile-debug
+    ports:
+      - 8001:8001
 
   userservice:
     build:
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile-debug
+    ports:
+      - 8002:8002
+      - 9229:9229    # debugger port
+
+  userservice-db:
+    ports:
+      - 6002:5432
 
   bookservice:
     build:
       dockerfile: ./Dockerfile
+    ports:
+      - 8003:8003
+
+  bookservice-db:
+    ports:
+      - 6003:5432
+      
+  reviewservice:
+    build:
+      dockerfile: ./Dockerfile-debug
+    ports:
+      - 8004:8004
+      - 2345:2345    # debugger port
+
+  reviewservice-db:
+    ports:
+      - 6004:27017

@@ -97,6 +97,9 @@ func saveBooksSnapshot(items []models.Book) (int64, int64, error) {
 	DATABASE_NAME := os.Getenv("DATABASE_NAME")
 	COLLECTION_NAME := "books"
 	mongoModels := convertToMongoWriteModel(items)
+	if mongoModels == nil {
+		return 0, 0, nil
+	}
 	collection := db.Client.Database(DATABASE_NAME).Collection(COLLECTION_NAME)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

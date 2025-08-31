@@ -44,6 +44,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${AUTH_SERVICE_ENV_ASPNETCORE_ENVIRONMENT}
       SHARED_SECRET: ${SHARED_SECRET}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
     networks:
       - bookhub-network
 

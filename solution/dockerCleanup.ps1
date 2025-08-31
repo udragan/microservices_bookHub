@@ -15,7 +15,7 @@ $images = docker images --format "{{.Repository}}:{{.Tag}} {{.ID}}" | Where-Obje
 if ($images) {
     foreach ($line in $images) {
         $imageId = $line.Split(" ")[1]
-        Write-Host "\tRemoving image ID: $imageId"
+        Write-Host "	Removing image ID: $imageId"
         docker rmi $imageId
     }
     Write-Host "All matching images removed."
