@@ -69,6 +69,7 @@ func getServiceToken() (models.ServiceTokenResponse, error) {
 	if err != nil {
 		return token, err
 	}
+	io.Copy(io.Discard, response.Body)
 	err = json.Unmarshal([]byte(tokenResponseBody), &token)
 	if err != nil {
 		return token, err
@@ -93,12 +94,11 @@ func getBooksSnapshot(token models.ServiceTokenResponse) ([]models.Book, error) 
 
 func saveBooksSnapshot(items []models.Book) (int64, int64, error) {
 	DATABASE_NAME := os.Getenv("DATABASE_NAME")
-	COLLECTION_NAME := "books"
 	mongoModels := convertToMongoWriteModel(items)
 	if mongoModels == nil {
 		return 0, 0, nil
 	}
-	collection := db.Client.Database(DATABASE_NAME).Collection(COLLECTION_NAME)
+	collection := db.Client.Database(DATABASE_NAME).Collection(string(common.BooksCollection))
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	bulkOptions := options.BulkWrite().SetOrdered(false)
@@ -108,7 +108,7 @@ func saveBooksSnapshot(items []models.Book) (int64, int64, error) {
 
 func convertToMongoWriteModel(items []models.Book) []mongo.WriteModel {
 	var mongoModels []mongo.WriteModel
-	currentTime := time.Now()
+	currentTime := time.Now().UTC()
 	for _, item := range items {
 		if item.IsDeleted {
 			filter := bson.M{"bookId": item.ID}

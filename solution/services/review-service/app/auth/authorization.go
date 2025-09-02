@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -67,7 +68,15 @@ func JWTAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Optional: set token/claims in context if needed
-		next.ServeHTTP(w, r)
+		// Store claims in context
+		claims, isOk := token.Claims.(jwt.MapClaims)
+		if !isOk {
+			log.Printf("WARNING:	No claims in token.")
+			http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), ClaimsKey, claims)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
