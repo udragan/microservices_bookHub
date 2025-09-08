@@ -7,7 +7,7 @@ import (
 // Review represents a document in the "reviews" collection
 type Review struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	BookId    int                `bson:"bookId"`
+	BookId    string             `bson:"bookId"`
 	UserId    string             `bson:"userId"`
 	Rating    int                `bson:"rating"`
 	Text      string             `bson:"text"`
