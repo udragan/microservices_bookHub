@@ -98,9 +98,35 @@ func RemoveReview(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetByBookId(w http.ResponseWriter, r *http.Request) {
+	log.Println("[INFO] Get By BookId - started..")
+	var DATABASE_NAME = os.Getenv("DATABASE_NAME")
+	var result []models.Review
 	vars := mux.Vars(r)
-
 	bookId := vars["bookId"]
-
-	fmt.Printf("received bookId: %s\n", bookId)
+	log.Printf("[INFO] Get By BookId - bookId: %s", bookId)
+	filter := bson.M{"bookId": bookId}
+	collection := db.Client.Database(DATABASE_NAME).Collection(string(common.ReviewsCollection))
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Printf("[ERR ] ❌ Get By BookId - %v", err)
+		msg := fmt.Sprintf("Failed to get reviews by bookId, %v", err)
+		http.Error(w, msg, http.StatusBadRequest)
+		return
+	}
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var review models.Review
+		if err = cursor.Decode(&review); err != nil {
+			log.Printf("[ERR ] ❌ Get By BookId - error decoding item %v", err)
+			msg := fmt.Sprintf("Failed to decode reviews, %v", err)
+			http.Error(w, msg, http.StatusBadRequest)
+			return
+		}
+		result = append(result, review)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(result)
 }
