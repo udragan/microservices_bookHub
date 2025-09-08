@@ -8,7 +8,7 @@ import (
 type Review struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
 	BookId    int                `bson:"bookId"`
-	UserId    int                `bson:"userId"`
+	UserId    string             `bson:"userId"`
 	Rating    int                `bson:"rating"`
 	Text      string             `bson:"text"`
 	Timestamp primitive.DateTime `bson:"timestamp"`
