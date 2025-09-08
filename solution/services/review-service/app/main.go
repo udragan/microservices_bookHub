@@ -33,6 +33,7 @@ func main() {
 	// endpoints #######################
 
 	router.HandleFunc("/", AddReview).Methods("POST")
+	router.HandleFunc("/{reviewId}", RemoveReview).Methods("DELETE")
 	router.HandleFunc("/getByBookId/{bookId}", GetByBookId).Methods("GET")
 
 	// #################################
