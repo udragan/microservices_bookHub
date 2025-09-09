@@ -42,3 +42,6 @@ services:
   reviewservice-db:
     ports:
       - 6004:27017
+
+  angularclient:
+      dockerfile: ./Dockerfile-debug
