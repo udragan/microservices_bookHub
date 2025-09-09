@@ -163,6 +163,21 @@ services:
     networks:
       - bookhub-network
 
+  angularclient:
+    container_name: ${ANGULAR_CLIENT_CONTAINER_NAME}
+    image: ${ANGULAR_CLIENT_IMAGE_NAME}
+    build:
+      context: ./clients/angular-client
+      dockerfile: ./Dockerfile
+    environment:
+      API_URL: ${API_URL}
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+    ports:
+      - 8080:80
+    networks:
+      - bookhub-network
+
 volumes:
   userservice_data:
   bookservice_data:
