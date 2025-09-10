@@ -2,8 +2,24 @@
 
 namespace ApiGateway.Services;
 
-public class RoutingService(HttpClient _httpClient, IConfiguration _config)
+public class RoutingService
 {
+	#region Members
+	private readonly HttpClient _httpClient;
+	private readonly IConfiguration _config;
+	private readonly ILogger<RoutingService> _logger;
+
+	#endregion
+
+	#region Constructors
+	public RoutingService(HttpClient httpClient, IConfiguration config, ILoggerFactory loggerFactory)
+	{
+		_httpClient = httpClient;
+		_config = config;
+		_logger = loggerFactory.CreateLogger<RoutingService>();
+	}
+	#endregion
+
 	#region Public methods
 	public async Task<HttpResponseMessage> ForwardRequestAsync(HttpRequest request)
 	{

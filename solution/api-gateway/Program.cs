@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ApiGateway.Middleware;
 using ApiGateway.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -5,6 +6,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Json logging format
+builder.Logging.ClearProviders();
+builder.Logging.AddJsonConsole(options =>
+{
+	options.IncludeScopes = false;
+	options.TimestampFormat = "yyyy-MM-ddTHH:mm:ssffffZ ";
+	options.JsonWriterOptions = new JsonWriterOptions { Indented = false };
+});
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -32,7 +42,6 @@ builder.WebHost.ConfigureKestrel(options =>
 	}
 });
 
-
 // Jwt config from appsettings
 IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
 string? authority = jwtConfig["Authority"];
@@ -46,6 +55,17 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowAngularClient", policy =>
+	{
+		policy.AllowAnyOrigin()//WithOrigins("http://localhost:4200", "https://localhost:4200")
+			.AllowAnyMethod()
+			.AllowAnyHeader();
+	});
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 	.AddJwtBearer(options =>
@@ -63,6 +83,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			ValidateIssuerSigningKey = true
 		};
 	});
+
 builder.Services.AddAuthorizationBuilder()
 	.SetFallbackPolicy(new AuthorizationPolicyBuilder()
 		.RequireAuthenticatedUser()
@@ -81,11 +102,12 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
-app.UseMiddleware<RequestLoggingMiddleware>();
 
+app.UseCors("AllowAngularClient");
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 
