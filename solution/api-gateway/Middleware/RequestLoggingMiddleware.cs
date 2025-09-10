@@ -16,10 +16,27 @@ public class RequestLoggingMiddleware
 	#endregion
 
 	#region Public methods
-	public async Task Invoke(HttpContext context)
+	public async Task InvokeAsync(HttpContext context)
 	{
-		_logger.LogInformation($"Incoming request: {context.Request.Method} {context.Request.Path}");
-		await _next(context);
+		// Capture the response using a buffer
+		var originalBody = context.Response.Body;
+		using var memoryStream = new MemoryStream();
+		context.Response.Body = memoryStream;
+
+		await _next(context); // Proceed to the next middleware
+
+		// Check the status code after the response
+		memoryStream.Seek(0, SeekOrigin.Begin);
+		await memoryStream.CopyToAsync(originalBody);
+		context.Response.Body = originalBody;
+
+		if (context.Response.StatusCode == 401 || context.Response.StatusCode == 403)
+		{
+			_logger.LogWarning("Unauthorized request {Method} {Path} {StatusCode}",
+				context.Request.Method,
+				context.Request.Path,
+				context.Response.StatusCode);
+		}
 	}
 	#endregion
 }
