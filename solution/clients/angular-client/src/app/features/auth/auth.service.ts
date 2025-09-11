@@ -1,16 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 	private readonly TOKEN_KEY = 'jwt_token';
-	private apiUrl = 'https://localhost:8000/auth'; // via API Gateway
+	private apiUrl = '';
 
-	constructor(private http: HttpClient, private router: Router) {}
-
+	constructor(private http: HttpClient, private router: Router) {
+		this.apiUrl = environment.apiBaseUrl;
+	}
+	
 	login(credentials: { email: string; password: string }) {
-		return this.http.post<{ access_token: string }>(`${this.apiUrl}/login`, credentials);
+		return this.http.post<{ access_token: string }>(`${this.apiUrl}/auth/login`, credentials);
 	}
 
 	logout() {

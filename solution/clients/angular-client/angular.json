@@ -64,6 +64,9 @@
               "buildTarget": "Bookhub-AngularClient:build:development"
             }
           },
+          "options": {
+            "poll": 2000
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
