@@ -9,7 +9,7 @@
       "applicationUrl": "https://localhost:8000",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
-            "CERT_PATH": "dev-certificate.pfx",
+            "CERT_PATH": "cert/dev-certificate.pfx",
             "CERT_PASSWORD": "devcertificate",
             "PORT": "8000"
         }
