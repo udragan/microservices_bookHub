@@ -44,4 +44,5 @@ services:
       - 6004:27017
 
   angularclient:
+    build:
       dockerfile: ./Dockerfile-debug

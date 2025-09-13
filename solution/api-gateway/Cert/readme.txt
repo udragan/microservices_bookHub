@@ -1,0 +1,1 @@
+place your certificate in this folder naming it dev-dertificate.pfx
