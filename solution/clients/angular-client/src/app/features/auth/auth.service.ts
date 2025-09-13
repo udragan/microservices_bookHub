@@ -1,6 +1,8 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
 import { environment } from '../../../environments/environment';
 
@@ -13,7 +15,7 @@ export class AuthService {
 		this.apiUrl = environment.apiBaseUrl;
 	}
 	
-	login(credentials: { email: string; password: string }) {
+	login(credentials: { email: string; password: string }): Observable<{access_token: string}> {
 		return this.http.post<{ access_token: string }>(`${this.apiUrl}/auth/login`, credentials);
 	}
 
@@ -32,6 +34,16 @@ export class AuthService {
 
 	isAuthenticated(): boolean {
 		var token = this.getToken();
-		return !!token && token != 'undefined';
+		if (token === null) {
+			return false;
+		}
+		try {
+			const decoded = jwtDecode(token);
+			const exp = decoded.exp;
+			const now = Math.floor(Date.now() / 1000);
+			return exp !== undefined && exp > now;
+		} catch {
+			return false;
+		}
 	}
 }

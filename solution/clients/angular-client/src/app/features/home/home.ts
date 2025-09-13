@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
 	selector: 'app-home',
 	imports: [],
-	template: `
-		<p>
-			home works!
-		</p>
-	`,
+	templateUrl: './home.html',
 	styleUrl: './home.scss'
 })
 export class Home {
+	constructor(private auth: AuthService) { }
 
+	logout() {
+		this.auth.logout();
+	}
 }
