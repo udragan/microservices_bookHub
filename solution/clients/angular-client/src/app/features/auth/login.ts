@@ -9,13 +9,7 @@ import { AuthService } from './auth.service';
 	imports: [
 		FormsModule
 	],
-	template: `
-	<form (ngSubmit)="login()">
-		<input [(ngModel)]="email" name="email" placeholder="Email" required />
-		<input [(ngModel)]="password" name="password" type="password" placeholder="Password" required />
-		<button type="submit">Login</button>
-	</form>
-	`,
+	templateUrl:'./login.html',
 })
 export class Login {
 	email = '';
@@ -31,5 +25,9 @@ export class Login {
 			},
 			error: err => alert('Login failed'),
 		});
+	}
+
+	register() {
+		this.router.navigate(['register']);
 	}
 }
