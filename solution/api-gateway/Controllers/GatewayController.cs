@@ -18,8 +18,14 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 	{
 		HttpResponseMessage response = await routingService.ForwardRequestAsync(Request);
 		string content = await response.Content.ReadAsStringAsync();
+		ContentResult result = new ContentResult
+		{
+			StatusCode = (int)response.StatusCode,
+			Content = content,
+			ContentType = response.Content.Headers.ContentType?.ToString() ?? "application/json"
+		};
 
-		return Content(content, response.Content.Headers.ContentType?.ToString() ?? "application/json");
+		return result;
 	}
 
 	// Separate specific endpoint for register since it doesnt have authorization by design
@@ -31,8 +37,14 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 	{
 		HttpResponseMessage response = await routingService.ForwardRequestAsync(Request);
 		string content = await response.Content.ReadAsStringAsync();
+		ContentResult result = new ContentResult
+		{
+			StatusCode = (int)response.StatusCode,
+			Content = content,
+			ContentType = response.Content.Headers.ContentType?.ToString() ?? "application/json"
+		};
 
-		return Content(content, response.Content.Headers.ContentType?.ToString() ?? "application/json");
+		return result;
 	}
 
 	[HttpGet, HttpPost, HttpPut, HttpDelete, HttpPatch]
@@ -53,8 +65,14 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 
 		HttpResponseMessage response = await routingService.ForwardRequestAsync(Request);
 		string content = await response.Content.ReadAsStringAsync();
+		ContentResult result = new ContentResult
+		{
+			StatusCode = (int)response.StatusCode,
+			Content = content,
+			ContentType = response.Content.Headers.ContentType?.ToString() ?? "application/json"
+		};
 
-		return Content(content, response.Content.Headers.ContentType?.ToString() ?? "application/json");
+		return result;
 	}
 	#endregion
 }
