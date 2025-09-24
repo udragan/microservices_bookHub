@@ -1,6 +1,97 @@
-<form (ngSubmit)="login()">
-    <input [(ngModel)]="email" name="email" placeholder="Email" required />
-    <input [(ngModel)]="password" name="password" type="password" placeholder="Password" required />
-    <button type="submit">Login</button>
-</form>
-<button (click)="register()">Register</button>
+<div class="card-container">
+
+<tui-card class="login-card"
+	tuiAppearance="floating"
+	tuiCardLarge="compact">
+	<section>
+		<tui-tabs class="even-tabs" [(activeItemIndex)]="activeTab">
+			<button
+				iconStart="@tui.user-round"
+				tuiTab
+				type="button"
+			>Login</button>
+			<button
+				iconStart="@tui.user-round-plus"
+				tuiTab
+				type="button"
+			>Register</button>
+		</tui-tabs>
+
+		@if (activeTab === 0) {
+			<form style="width: 100%; height: 100%;" (submit)="login()"
+				tuiCardMedium
+				tuiForm="m"
+				[formGroup]="formLogin">				
+				<tui-textfield >
+					<input
+						formControlName="email"
+						placeholder="email"
+						tuiTextfield />
+					</tui-textfield>
+					<tui-error
+						formControlName="email"
+						[error]="[] | tuiFieldError | async" />
+						<tui-textfield>
+							<input
+								formControlName="password"
+								placeholder="password"
+								type="password"
+								tuiTextfield />
+							</tui-textfield>
+								<tui-error
+									formControlName="password"
+									[error]="[] | tuiFieldError | async" />
+				<footer>
+					<button
+						tuiButton
+						type="submit">
+						Submit
+					</button>
+				</footer>
+			</form>
+		}
+		@else if (activeTab === 1) {
+			<form style="width: 100%; height: 100%;" (submit)="register()"
+				tuiCardMedium
+				tuiForm="m"
+				[formGroup]="formRegister">				
+				<tui-textfield>
+					<input
+						formControlName="name"
+						placeholder="name"
+						tuiTextfield />
+					</tui-textfield>
+						<tui-error
+						formControlName="name"
+						[error]="[] | tuiFieldError | async" />
+					<tui-textfield >
+						<input
+							formControlName="email"
+							placeholder="email"
+							tuiTextfield />
+						</tui-textfield>
+							<tui-error
+								formControlName="email"
+								[error]="[] | tuiFieldError | async" />
+							<tui-textfield>
+								<input
+									formControlName="password"
+									placeholder="password"
+									type="password"
+									tuiTextfield />
+							</tui-textfield>
+							<tui-error
+								formControlName="password"
+								[error]="[] | tuiFieldError | async" />
+					<footer>
+					<button
+						tuiButton
+						type="submit">
+						Submit
+					</button>
+				</footer>
+			</form>
+		}
+	</section>
+</tui-card>
+</div>

@@ -9,7 +9,7 @@ import { AuthInterceptor } from './features/auth/auth.interceptor';
 	selector: 'app-root',
 	imports: [
 		RouterOutlet,
-		TuiRoot,
+		TuiRoot
 	],
 	templateUrl: './app.html',
 	styleUrl: './app.scss',
