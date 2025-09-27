@@ -1,0 +1,83 @@
+<header tuiNavigationHeader> 
+	<hr />
+	<button
+		iconStart="@tui.bell"
+		tuiIconButton
+		type="button">
+			Notifications
+		<tui-badge-notification />
+	</button>
+	<button
+		iconStart="@tui.ellipsis"
+		tuiIconButton
+		type="button">
+		More
+	</button>
+	<tui-avatar src="User" />
+</header>
+
+<div [style.display]="'flex'">
+	<aside
+		[tuiNavigationAside]="expanded()">
+		<header>
+			<button
+				iconStart="@tui.home"
+				tuiAsideItem
+				type="button"
+				[routerLink]="[routes.AdminDashboard]"
+				[routerLinkActiveOptions]="{ exact: true }">
+				<span tuiFade>Home</span>
+			</button>
+		</header>
+		<button
+			iconStart="@tui.users"
+			tuiAsideItem
+			type="button"
+			[routerLink]="[routes.AdminUsers]"
+			[routerLinkActiveOptions]="{ exact: true }">
+			<span tuiFade>Users</span>
+		</button>
+		<hr />
+		<footer>
+			<button
+				tuiAsideItem
+				type="button"
+				[iconStart]="expanded() ? '@tui.chevron-left' : '@tui.chevron-right'"
+				(click)="handleToggle()">
+				{{ expanded() ? 'Collapse' : 'Expand' }}
+			</button>
+		</footer>
+	</aside>
+	<main tuiNavigationMain>
+		<nav
+			compact
+			tuiSubheader
+			[style.position]="'sticky'">
+			<tui-breadcrumbs [itemsLimit]="10">
+				@for (item of breadcrumbs; track $index; let last = $last) {
+					<ng-container>
+						@if (last) {
+							<ng-container>
+								<strong
+									*tuiItem
+									tuiFade>
+									{{ item }}
+								</strong>
+							</ng-container>
+						}
+						@if (!last) {
+							<ng-container>
+								<button
+									*tuiItem
+									tuiLink
+									type="button">
+									{{ item }}
+								</button>
+							</ng-container>
+						}
+					</ng-container>
+				}
+			</tui-breadcrumbs>
+		</nav>
+	</main>
+</div>
