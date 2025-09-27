@@ -2,13 +2,14 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { concatMap } from 'rxjs';
 
 import { TuiAppearance, TuiButton, TuiError, TuiIcons, TuiTextfield } from '@taiga-ui/core';
 import { TuiTabs, TuiTabsDirective, TuiFieldErrorPipe } from '@taiga-ui/kit';
 import { TuiCardLarge, TuiCardMedium, TuiForm } from '@taiga-ui/layout';
 
 import { AuthService } from './auth.service';
-import { concatMap } from 'rxjs';
+import { AppRoutes } from '../../app.routes';
 
 @Component({
 	selector: 'app-login',
@@ -57,7 +58,11 @@ export class Login {
 			this.auth.login({ email: email, password: password }).subscribe({
 				next: res => {
 					this.auth.setToken(res.access_token);
-					this.router.navigate(['/']);
+					if (this.auth.isAdmin()) {
+						this.router.navigate([AppRoutes.AdminDashboard]);
+					} else {
+						this.router.navigate([AppRoutes.Home]);
+					}
 				},
 				error: _ => alert('Login failed!'), 
 			});
@@ -75,7 +80,7 @@ export class Login {
 				concatMap(_ => this.auth.login({ email: "dd", password: password }))).subscribe({
 					next: res => {
 						this.auth.setToken(res.access_token);
-						this.router.navigate(['/']);
+						this.router.navigate([AppRoutes.Home]);
 					},
 					error: _ => alert('Registration failed!')
 			});

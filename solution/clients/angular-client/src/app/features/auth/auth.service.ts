@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 import { environment } from '../../../environments/environment';
+import { JwtUser } from './jwtUser';
+import { AppRoutes } from '../../app.routes';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -25,7 +27,7 @@ export class AuthService {
 
 	logout() {
 		localStorage.removeItem(this.TOKEN_KEY);
-		this.router.navigate(['/login']);
+		this.router.navigate([AppRoutes.Login]);
 	}
 
 	setToken(token: string) {
@@ -46,6 +48,20 @@ export class AuthService {
 			const exp = decoded.exp;
 			const now = Math.floor(Date.now() / 1000);
 			return exp !== undefined && exp > now;
+		} catch {
+			return false;
+		}
+	}
+
+	isAdmin(): boolean {
+		var token = this.getToken();
+		if (token === null) {
+			return false;
+		}
+		try {
+			const decoded = jwtDecode<JwtUser>(token);
+			const role = decoded.role;
+			return role !== undefined && role === 'admin';
 		} catch {
 			return false;
 		}
