@@ -4,7 +4,7 @@ import { RouterLink, RouterLinkActive} from '@angular/router';
 
 import { tuiAsPortal } from '@taiga-ui/cdk';
 import { TuiAppearance, TuiButton, TuiDataList, TuiDropdown, TuiDropdownService, TuiLink, TuiTextfield } from '@taiga-ui/core';
-import { TuiAvatar, TuiBadgeNotification, TuiBreadcrumbs, TuiFade, TuiTabs } from '@taiga-ui/kit';
+import { TuiBreadcrumbs, TuiFade, TuiTabs } from '@taiga-ui/kit';
 import { TuiNavigation } from '@taiga-ui/layout';
 
 import { AppRoutes } from '../../app.routes';
@@ -16,8 +16,6 @@ import { AppRoutes } from '../../app.routes';
 		RouterLink,
 		RouterLinkActive,
 		TuiAppearance,
-		TuiAvatar,
-		TuiBadgeNotification,
 		TuiBreadcrumbs,
 		TuiButton,
 		TuiDataList,
@@ -29,8 +27,8 @@ import { AppRoutes } from '../../app.routes';
 		TuiTextfield
 	],
 	templateUrl:'./admin-dashboard.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [TuiDropdownService, tuiAsPortal(TuiDropdownService)],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	providers: [TuiDropdownService, tuiAsPortal(TuiDropdownService)],
 })
 export class AdminDashboard {
 	routes = AppRoutes;

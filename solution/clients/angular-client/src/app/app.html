@@ -1,22 +1,41 @@
 <tui-root>
   <!-- content of your app -->
-  <router-outlet /> 
-  <!--
-     If you need, you can add something between Taiga portal layers:
-    -->
-  <ng-container ngProjectAs="tuiOverContent">
-    <!-- Content over app content -->
-  </ng-container>
-  <ng-container ngProjectAs="tuiOverDialogs">
-    <!-- Content over dialogs -->
-  </ng-container>
-  <ng-container ngProjectAs="tuiOverAlerts">
-    <!-- Content over alerts -->
-  </ng-container>
-  <ng-container ngProjectAs="tuiOverDropdowns">
-    <!-- Content over dropdowns -->
-  </ng-container>
-  <ng-container ngProjectAs="tuiOverHints">
-    <!-- Content over hints -->
-  </ng-container>
+  	<header tuiNavigationHeader> 
+		<hr />
+	  	@if (this.auth.isAuthenticated()) {
+		   <button
+				iconStart="@tui.bell"
+				tuiIconButton
+				type="button">
+				Notifications
+				<tui-badge-notification />
+			</button>
+			<button
+				iconStart="@tui.ellipsis"
+				tuiIconButton
+				type="button">
+				More
+			</button>
+			<tui-avatar src="User" />
+		}
+	</header>
+	<router-outlet /> 
+  	<!--
+	 If you need, you can add something between Taiga portal layers:
+	-->
+	<ng-container ngProjectAs="tuiOverContent">
+	<!-- Content over app content -->
+	</ng-container>
+	<ng-container ngProjectAs="tuiOverDialogs">
+		<!-- Content over dialogs -->
+	</ng-container>
+	<ng-container ngProjectAs="tuiOverAlerts">
+		<!-- Content over alerts -->
+	</ng-container>
+	<ng-container ngProjectAs="tuiOverDropdowns">
+		<!-- Content over dropdowns -->
+	</ng-container>
+	<ng-container ngProjectAs="tuiOverHints">
+		<!-- Content over hints -->
+	</ng-container>
 </tui-root>

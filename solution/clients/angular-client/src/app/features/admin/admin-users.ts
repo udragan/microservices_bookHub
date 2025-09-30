@@ -4,20 +4,18 @@ import { RouterLink, RouterLinkActive} from '@angular/router';
 
 import { tuiAsPortal } from '@taiga-ui/cdk';
 import { TuiAppearance, TuiButton, TuiDataList, TuiDropdown, TuiDropdownService, TuiLink, TuiTextfield } from '@taiga-ui/core';
-import { TuiAvatar, TuiBadgeNotification, TuiBreadcrumbs, TuiFade, TuiTabs } from '@taiga-ui/kit';
+import { TuiBreadcrumbs, TuiFade, TuiTabs } from '@taiga-ui/kit';
 import { TuiNavigation } from '@taiga-ui/layout';
 
 import { AppRoutes } from '../../app.routes';
 
 @Component({
-	selector: 'app-admin-dashboard',
+	selector: 'app-admin-users',
 	imports: [
 		FormsModule,
 		RouterLink,
 		RouterLinkActive,
 		TuiAppearance,
-		TuiAvatar,
-		TuiBadgeNotification,
 		TuiBreadcrumbs,
 		TuiButton,
 		TuiDataList,
@@ -28,14 +26,14 @@ import { AppRoutes } from '../../app.routes';
 		TuiTabs,
 		TuiTextfield
 	],
-	templateUrl:'./admin-dashboard.html',
+	templateUrl:'./admin-users.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TuiDropdownService, tuiAsPortal(TuiDropdownService)],
 })
-export class AdminDashboard {
+export class AdminUsers {
 	routes = AppRoutes;
  	protected expanded = signal(false);
-	protected readonly breadcrumbs = ['Home', 'Admin', 'Dashboard'];
+	protected readonly breadcrumbs = ['Home', 'Admin', 'Users'];
 
 	constructor() { }
 
