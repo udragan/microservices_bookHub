@@ -36,6 +36,15 @@ import { AuthService } from './features/auth/auth.service';
 })
 export class App {
 	protected readonly title = signal('Bookhub-AngularClient');
+	isOpen = false;
 
-	constructor(public auth: AuthService) {}
+	constructor(protected auth: AuthService) {}
+
+	editUser() {
+		this.isOpen = false;
+	}
+	
+	protected onClick(): void {
+		this.isOpen = !this.isOpen;
+	}
 }
