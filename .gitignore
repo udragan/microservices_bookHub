@@ -449,3 +449,6 @@ Thumbs.db
 
 # services/review-service
 **/review-service/app.exe
+
+# services/media-service
+**/media-service/Data
