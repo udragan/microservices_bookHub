@@ -64,15 +64,31 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 		}
 
 		HttpResponseMessage response = await routingService.ForwardRequestAsync(Request);
-		string content = await response.Content.ReadAsStringAsync();
-		ContentResult result = new ContentResult
-		{
-			StatusCode = (int)response.StatusCode,
-			Content = content,
-			ContentType = response.Content.Headers.ContentType?.ToString() ?? "application/json"
-		};
 
-		return result;
+		if (!response.IsSuccessStatusCode)
+		{
+			return StatusCode((int)response.StatusCode);
+		}
+
+		string contentType = response.Content.Headers.ContentType?.ToString() ?? "application/json";
+
+		switch (contentType)
+		{
+			case string ct when ct.StartsWith("application/json"):
+				string textContent = await response.Content.ReadAsStringAsync();
+				return new ContentResult
+				{
+					StatusCode = (int)response.StatusCode,
+					Content = textContent,
+					ContentType = contentType
+				};
+			case string ct when ct.StartsWith("image/"):
+				Stream imageContent = await response.Content.ReadAsStreamAsync();
+				return File(imageContent, contentType);
+			default:
+				Stream binaryContent = await response.Content.ReadAsStreamAsync();
+				return File(binaryContent, contentType);
+		}
 	}
 	#endregion
 }
