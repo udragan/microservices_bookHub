@@ -11,7 +11,8 @@
             "module": "uvicorn",
             "args": [
                 "app.main:app",              
-                "--port", "8010"
+                "--port", "8010",
+                "--reload"
             ],
             "cwd": "${workspaceFolder}",
             "jinja": true,
