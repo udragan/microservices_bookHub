@@ -28,6 +28,8 @@ async function runMigrations() {
         console.log('📦 Running migrations...');
         const { stdout, stderr } = await execPromise(
             'npx sequelize-cli db:migrate --config app/db/config/config.json --migrations-path app/db/migrations'
+            // uncomment this line to revert the last applied migration!
+            //'npx sequelize-cli db:migrate:undo --config app/db/config/config.json --migrations-path app/db/migrations'
         );
         console.log(stdout);
         if (stderr) {

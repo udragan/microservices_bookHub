@@ -11,7 +11,7 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "app.main:app",              
+                "app.main:app",
                 "--port", "8003"
             ],
             "cwd": "${workspaceFolder}",
