@@ -163,6 +163,21 @@ services:
     networks:
       - bookhub-network
 
+  mediaservice:
+    container_name:  ${MEDIA_SERVICE_CONTAINER_NAME}
+    image: ${MEDIA_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/media-service
+      dockerfile: ./Dockerfile
+    environment:
+      MEDIA_STORAGE_PATH: ${MEDIA_SERVICE_MEDIA_STORAGE_PATH}
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+    volumes:
+      - mediaservice_data:/app/Data
+    networks:
+      - bookhub-network
+
   angularclient:
     container_name: ${ANGULAR_CLIENT_CONTAINER_NAME}
     image: ${ANGULAR_CLIENT_IMAGE_NAME}
@@ -182,3 +197,4 @@ volumes:
   userservice_data:
   bookservice_data:
   reviewservice_data:
+  mediaservice_data:
