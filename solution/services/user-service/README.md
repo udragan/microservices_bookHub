@@ -1,6 +1,12 @@
-- run migrations using squelize
+- create new migration
+    > npx sequelize-cli migration:generate --migrations-path app/db/migrations --name <migration-name>
+
+- run migrations using squelize (run on app startup)
    in project root folder
     > npx sequelize-cli db:migrate --config app/db/config/config.json --migrations-path app/db/migrations
+
+- revert last applied migration (run on app startup)
+    > npx sequelize-cli db:migrate:undo --config app/db/config/config.json --migrations-path app/db/migrations
 
 - run server
     navigate to root (user-service)
