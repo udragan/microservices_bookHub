@@ -5,3 +5,5 @@ python-jose[cryptography]
 cachetools
 httpx
 python-multipart
+
+debugpy

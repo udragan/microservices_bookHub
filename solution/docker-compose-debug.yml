@@ -43,6 +43,13 @@ services:
     ports:
       - 6004:27017
 
+  mediaservice:
+    build:
+      dockerfile: ./Dockerfile-debug
+    ports:
+      - 8010:8010
+      - 5678:5678    # debuger port
+
   angularclient:
     build:
       dockerfile: ./Dockerfile-debug
