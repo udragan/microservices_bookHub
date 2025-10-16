@@ -2,22 +2,10 @@
 
 namespace ApiGateway.Services;
 
-public class RoutingService
+public class RoutingService(HttpClient _httpClient, IConfiguration _config, ILoggerFactory _loggerFactory)
 {
 	#region Members
-	private readonly HttpClient _httpClient;
-	private readonly IConfiguration _config;
-	private readonly ILogger<RoutingService> _logger;
-
-	#endregion
-
-	#region Constructors
-	public RoutingService(HttpClient httpClient, IConfiguration config, ILoggerFactory loggerFactory)
-	{
-		_httpClient = httpClient;
-		_config = config;
-		_logger = loggerFactory.CreateLogger<RoutingService>();
-	}
+	private readonly ILogger<RoutingService> _logger = _loggerFactory.CreateLogger<RoutingService>();
 	#endregion
 
 	#region Public methods
@@ -33,17 +21,46 @@ public class RoutingService
 
 		request.EnableBuffering(); // must be called for further reads!
 		request.Body.Position = 0;
-		using StreamReader reader = new(request.Body, Encoding.UTF8, leaveOpen: true);
-		string jsonData = await reader.ReadToEndAsync();
-		request.Body.Position = 0;
 
-		HttpRequestMessage forwardRequest = new(new HttpMethod(request.Method), forwardUrl)
+		HttpRequestMessage forwardRequest = new(new HttpMethod(request.Method), forwardUrl);
+
+		if (request.ContentType != null && request.ContentType.Contains("multipart/form-data"))
 		{
-			Content = new StringContent(jsonData, Encoding.UTF8, request.ContentType ?? "application/json")
-		};
+			IFormCollection form = await request.ReadFormAsync();
+
+			// Create a new MultipartFormDataContent with the same boundary as the original request
+			string boundary = request.ContentType.Split("boundary=")[1];
+			MultipartFormDataContent multipartContent = new($"----{boundary}");
+
+			foreach (var field in form)
+			{
+				multipartContent.Add(new StringContent(field.Value, Encoding.UTF8), field.Key);
+			}
+
+			foreach (var file in form.Files)
+			{
+				StreamContent fileContent = new(file.OpenReadStream());
+				fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+				multipartContent.Add(fileContent, file.Name, file.FileName);
+			}
+
+			forwardRequest.Content = multipartContent;
+		}
+		else
+		{
+			using StreamReader reader = new(request.Body, Encoding.UTF8, leaveOpen: true);
+			string bodyContent = await reader.ReadToEndAsync();
+			request.Body.Position = 0;
+
+			forwardRequest.Content = new StringContent(bodyContent, Encoding.UTF8, request.ContentType ?? "application/json");
+		}
 
 		foreach (var header in request.Headers)
 		{
+			if (header.Key.Equals("Content-Type", StringComparison.OrdinalIgnoreCase) ||
+				header.Key.Equals("Content-Length", StringComparison.OrdinalIgnoreCase))
+				continue;
+
 			forwardRequest.Headers.TryAddWithoutValidation(header.Key, [.. header.Value]);
 		}
 
