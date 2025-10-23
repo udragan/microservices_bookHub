@@ -7,6 +7,7 @@ import { AuthInterceptor } from './features/auth/auth.interceptor';
 import { TuiAvatar, TuiBadgeNotification, TuiTabs } from '@taiga-ui/kit';
 import { TuiNavigation } from '@taiga-ui/layout';
 import { AuthService } from './features/auth/auth.service';
+import { MediaService } from './core/services/media.service';
 
 @Component({
 	selector: 'app-root',
@@ -26,19 +27,29 @@ import { AuthService } from './features/auth/auth.service';
 	],
 	templateUrl: './app.html',
 	styleUrl: './app.scss',
-	providers: [
-	{
-		provide: HTTP_INTERCEPTORS,
-		useClass: AuthInterceptor,
-		multi: true
-	}
-	]
 })
 export class App {
 	protected readonly title = signal('Bookhub-AngularClient');
 	isOpen = false;
+	avatar = "@tui.user"
 
-	constructor(protected auth: AuthService) {}
+	constructor(protected auth: AuthService,
+		protected mediaService : MediaService
+	) {}
+
+	ngOnInit() : void {
+		if (this.auth.isAuthenticated()) {
+			let av = this.mediaService.getAvatar().subscribe({
+				next: response => {
+					const imageUrl = URL.createObjectURL(response);
+    			this.avatar = imageUrl;
+				},
+				error: e => {
+					console.error(e)
+				}
+			});
+		}
+	}
 
 	editUser() {
 		this.isOpen = false;
