@@ -1,33 +1,33 @@
 <tui-root>
   <!-- content of your app -->
   	<header tuiNavigationHeader> 
-		<hr />
+			<hr />
 	  	@if (this.auth.isAuthenticated()) {
-		   <button
-				iconStart="@tui.bell"
-				tuiIconButton
-				type="button">
-				Notifications
-				<tui-badge-notification />
-			</button>
-			<button
-				iconStart="@tui.ellipsis"
-				tuiIconButton
-				type="button">
-				More
-			</button>
-			<tui-avatar src="@tui.user" style="background-color: red;"
-				[tuiDropdown]="dropdown"
-				[tuiDropdownManual]="isOpen"
-				(click)="onClick()">
-				<ng-template #dropdown>
-					<tui-data-list>
-						<button tuiOption new (click)="editUser()">Profile</button>
-						<button tuiOption new (click)="editUser()">Logout</button>
-					</tui-data-list>
-				</ng-template>
-			</tui-avatar>
-		}
+		    <button
+					iconStart="@tui.bell"
+					tuiIconButton
+					type="button">
+					Notifications
+					<tui-badge-notification />
+				</button>
+				<button
+					iconStart="@tui.ellipsis"
+					tuiIconButton
+					type="button">
+					More
+				</button>
+				<tui-avatar [src]="avatar"
+					[tuiDropdown]="dropdown"
+					[tuiDropdownManual]="isOpen"
+					(click)="onClick()">
+					<ng-template #dropdown>
+						<tui-data-list>
+							<button tuiOption new (click)="editUser()">Profile</button>
+							<button tuiOption new (click)="editUser()">Logout</button>
+						</tui-data-list>
+					</ng-template>
+				</tui-avatar>
+			}
 	</header>
 	<router-outlet /> 
   	<!--
