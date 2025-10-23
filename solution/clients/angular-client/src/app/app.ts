@@ -1,11 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TuiAppearance, TuiDataList, TuiDropdown, TuiRoot, TuiTextfield } from '@taiga-ui/core'
-
-import { AuthInterceptor } from './features/auth/auth.interceptor';
 import { TuiAvatar, TuiBadgeNotification, TuiTabs } from '@taiga-ui/kit';
 import { TuiNavigation } from '@taiga-ui/layout';
+
 import { AuthService } from './features/auth/auth.service';
 import { MediaService } from './core/services/media.service';
 
@@ -29,26 +27,35 @@ import { MediaService } from './core/services/media.service';
 	styleUrl: './app.scss',
 })
 export class App {
+	protected auth = inject(AuthService);
+	protected mediaService =inject(MediaService);
+
 	protected readonly title = signal('Bookhub-AngularClient');
 	isOpen = false;
 	avatar = "@tui.user"
+	userSignal = this.auth.userSignal;
 
-	constructor(protected auth: AuthService,
-		protected mediaService : MediaService
-	) {}
+	constructor() {
+		effect(() => { 
+			const currentUser = this.userSignal();
+      if (currentUser) {
+        this.mediaService.getAvatar().subscribe({
+					next: response => {
+						const imageUrl = URL.createObjectURL(response);
+						this.avatar = imageUrl;
+					},
+					error: e => {
+						console.error(e)
+					}
+				});
+      } else {
+        this.avatar = "@tui.user";
+      }
+		});
+	}
 
 	ngOnInit() : void {
-		if (this.auth.isAuthenticated()) {
-			let av = this.mediaService.getAvatar().subscribe({
-				next: response => {
-					const imageUrl = URL.createObjectURL(response);
-    			this.avatar = imageUrl;
-				},
-				error: e => {
-					console.error(e)
-				}
-			});
-		}
+		this.auth.setUserSignal(this.auth.isAuthenticated());
 	}
 
 	editUser() {
