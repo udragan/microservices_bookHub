@@ -59,7 +59,11 @@ export class App {
 	}
 
 	editUser() {
-		this.isOpen = false;
+
+	}
+
+	logout() {
+		this.auth.logout();
 	}
 	
 	protected onClick(): void {

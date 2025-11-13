@@ -22,8 +22,8 @@
 					(click)="onClick()">
 					<ng-template #dropdown>
 						<tui-data-list>
-							<button tuiOption new (click)="editUser()">Profile</button>
-							<button tuiOption new (click)="editUser()">Logout</button>
+							<button tuiOption new (click)="onClick(); editUser();">Profile</button>
+							<button tuiOption new (click)="onClick(); logout();">Logout</button>
 						</tui-data-list>
 					</ng-template>
 				</tui-avatar>
