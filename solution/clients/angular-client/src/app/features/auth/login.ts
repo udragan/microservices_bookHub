@@ -1,55 +1,52 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { concatMap } from 'rxjs';
 
-import { TuiAppearance, TuiButton, TuiError, TuiIcons, TuiTextfield } from '@taiga-ui/core';
-import { TuiTabs, TuiTabsDirective, TuiFieldErrorPipe } from '@taiga-ui/kit';
-import { TuiCardLarge, TuiCardMedium, TuiForm } from '@taiga-ui/layout';
+import { Button } from 'primeng/button'
+import { Card } from 'primeng/card'
+import { FloatLabel } from 'primeng/floatlabel'; 
+import { InputText } from 'primeng/inputtext';
+import { Tabs, Tab, TabList, TabPanel, TabPanels } from 'primeng/tabs';
 
-import { AuthService } from './auth.service';
 import { AppRoutes } from '../../app.routes';
+import { AuthService } from './auth.service';
 
 @Component({
 	selector: 'app-login',
+	standalone: true,
 	imports: [
-    CommonModule,
-    FormsModule,
-    TuiAppearance,
-    TuiTabs,
-    TuiTabsDirective,
-    TuiIcons,
-    TuiButton,
-    TuiCardLarge,
-    TuiTextfield,
-    ReactiveFormsModule,
-    TuiError,
-    TuiFieldErrorPipe,
-    TuiCardMedium,
-		AsyncPipe,
-		TuiForm,
-],
+		Button,
+		CommonModule,
+		Card,
+		FormsModule,
+		ReactiveFormsModule,
+		FloatLabel,
+		InputText,
+		Tab,
+		TabList,
+		TabPanel,
+		TabPanels,
+		Tabs,
+	],
 	templateUrl:'./login.html',
-	styleUrl:'./login.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+	styleUrl:'./login.scss'
 })
 export class Login {
-	activeTab = 0;
-
 	constructor(private auth: AuthService, private router: Router) {}
-////////////////////
+	
 	protected readonly formLogin = new FormGroup({
-		email: new FormControl('', Validators.required),
+		email: new FormControl('', [Validators.required, Validators.email]),
 		password: new FormControl('', Validators.required)
 	});
 
 	protected readonly formRegister = new FormGroup({
 		name: new FormControl('', Validators.required),
-		email: new FormControl('', Validators.required),
+		email: new FormControl('', [Validators.required, Validators.email]),
 		password: new FormControl('', Validators.required)
 	});
-////////////////////
+	// ------------------------------------------------------------------------
 	login() {
 		if (this.formLogin.valid) {
 			const formData = this.formLogin.value;
@@ -66,6 +63,8 @@ export class Login {
 				},
 				error: _ => alert('Login failed!'), 
 			});
+		} else {
+			alert('Input form is not valid!');
 		}
 	}
 
@@ -77,13 +76,15 @@ export class Login {
 			const password = formData.password?? '';
 
 			this.auth.register({name: name, email: email, password: password }).pipe(
-				concatMap(_ => this.auth.login({ email: "dd", password: password }))).subscribe({
+				concatMap(_ => this.auth.login({ email: email, password: password }))).subscribe({
 					next: res => {
 						this.auth.setToken(res.access_token);
 						this.router.navigate([AppRoutes.Home]);
 					},
 					error: _ => alert('Registration failed!')
 			});
+		} else {
+			alert('Input form is not valid!');
 		}
 	}
 }

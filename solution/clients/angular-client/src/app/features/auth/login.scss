@@ -1,33 +1,6 @@
 .card-container {
     display: flex;
-    justify-content: center; /* Horizontally center */
-    align-items: center;
-    padding: 2rem;
-}
-
-
-.login-card {
-    width: 400px;
-}
-
-.even-tabs {
-    display: flex;
-    width: 100%;
-}
-
-::ng-deep .tui-tabs__item,
-          .tab-item {
-    flex: 1 1 0;
-    text-align: center;
-    display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    padding: 0.5rem 0;
-}
-
-.tab-icon {
-    width: 1.2rem;
-    height: 1.2rem;
+    padding: 2rem;
 }

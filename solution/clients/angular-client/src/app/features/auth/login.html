@@ -1,97 +1,85 @@
 <div class="card-container">
+	<p-card header="BookHub" [style]="{ width: '25rem', overflow: 'hidden' }">
+		<p-tabs value="0">
+			<p-tablist>
+				<p-tab value="0">Login</p-tab>
+				<p-tab value="1">Register</p-tab>
+			</p-tablist>
+			<p-tabpanels>
+				<p-tabpanel value="0">
+					<form [formGroup]="formLogin" (submit)="login()" class="flex flex-column gap-4 w-full">
+						<div class="flex flex-column gap-1">
+							<p-floatlabel variant="on">
+								<input pInputText id="email" formControlName="email" class="w-full" />
+								<label for="email">Email Address</label>
+							</p-floatlabel>
+							
+							@if (formLogin.get('email')?.invalid && formLogin.get('email')?.dirty) {
+								<small class="p-error ml-2">
+									@if (formLogin.get('email')?.errors?.['required']) { Email is required. }
+									@if (formLogin.get('email')?.errors?.['email']) { Invalid format. }
+								</small>
+							}
+						</div>
 
-<tui-card class="login-card"
-	tuiAppearance="floating"
-	tuiCardLarge="compact">
-	<section>
-		<tui-tabs class="even-tabs" [(activeItemIndex)]="activeTab">
-			<button
-				iconStart="@tui.user-round"
-				tuiTab
-				type="button"
-			>Login</button>
-			<button
-				iconStart="@tui.user-round-plus"
-				tuiTab
-				type="button"
-			>Register</button>
-		</tui-tabs>
+						<div class="flex flex-column gap-1">
+							<p-floatlabel  variant="on">
+								<input pInputText type="password" id="password" formControlName="password" class="w-full" />
+								<label for="password">Password</label>
+							</p-floatlabel>
+							
+							@if (formLogin.get('password')?.invalid && formLogin.get('password')?.dirty) {
+								<small class="p-error ml-2">Password is required.</small>
+							}
+						</div>
 
-		@if (activeTab === 0) {
-			<form style="width: 100%; height: 100%;" (submit)="login()"
-				tuiCardMedium
-				tuiForm="m"
-				[formGroup]="formLogin">				
-				<tui-textfield >
-					<input
-						formControlName="email"
-						placeholder="email"
-						tuiTextfield />
-					</tui-textfield>
-					<tui-error
-						formControlName="email"
-						[error]="[] | tuiFieldError | async" />
-						<tui-textfield>
-							<input
-								formControlName="password"
-								placeholder="password"
-								type="password"
-								tuiTextfield />
-							</tui-textfield>
-								<tui-error
-									formControlName="password"
-									[error]="[] | tuiFieldError | async" />
-				<footer>
-					<button
-						tuiButton
-						type="submit">
-						Submit
-					</button>
-				</footer>
-			</form>
-		}
-		@else if (activeTab === 1) {
-			<form style="width: 100%; height: 100%;" (submit)="register()"
-				tuiCardMedium
-				tuiForm="m"
-				[formGroup]="formRegister">				
-				<tui-textfield>
-					<input
-						formControlName="name"
-						placeholder="name"
-						tuiTextfield />
-					</tui-textfield>
-						<tui-error
-						formControlName="name"
-						[error]="[] | tuiFieldError | async" />
-					<tui-textfield >
-						<input
-							formControlName="email"
-							placeholder="email"
-							tuiTextfield />
-						</tui-textfield>
-							<tui-error
-								formControlName="email"
-								[error]="[] | tuiFieldError | async" />
-							<tui-textfield>
-								<input
-									formControlName="password"
-									placeholder="password"
-									type="password"
-									tuiTextfield />
-							</tui-textfield>
-							<tui-error
-								formControlName="password"
-								[error]="[] | tuiFieldError | async" />
-					<footer>
-					<button
-						tuiButton
-						type="submit">
-						Submit
-					</button>
-				</footer>
-			</form>
-		}
-	</section>
-</tui-card>
+						<p-button type="submit" [rounded]="true" label="Submit" styleClass="w-full" />
+					</form>
+				</p-tabpanel>
+				<p-tabpanel value="1">
+					<form [formGroup]="formRegister" (submit)="register()" class="flex flex-column gap-4 w-full">
+						<div class="flex flex-column gap-1">
+							<p-floatlabel  variant="on">
+								<input pInputText id="name" formControlName="name" class="w-full" />
+								<label for="name">Name</label>
+							</p-floatlabel>							
+							
+							@if (formRegister.get('name')?.invalid && formRegister.get('name')?.dirty) {
+								<small class="p-error ml-2">
+									@if (formRegister.get('name')?.errors?.['required']) { Name is required. }
+								</small>
+							}
+						</div>
+
+						<div class="flex flex-column gap-1">
+							<p-floatlabel variant="on">
+								<input pInputText id="email" formControlName="email" class="w-full" />
+								<label for="email">Email Address</label>
+							</p-floatlabel>
+							
+							@if (formRegister.get('email')?.invalid && formRegister.get('email')?.dirty) {
+								<small class="p-error ml-2">
+									@if (formRegister.get('email')?.errors?.['required']) { Email is required. }
+									@if (formRegister.get('email')?.errors?.['email']) { Invalid format. }
+								</small>
+							}
+						</div>
+
+						<div class="flex flex-column gap-1">
+							<p-floatlabel  variant="on">
+								<input pInputText type="password" id="password" formControlName="password" class="w-full" />
+								<label for="password">Password</label>
+							</p-floatlabel>
+							
+							@if (formRegister.get('password')?.invalid && formRegister.get('password')?.dirty) {
+								<small class="p-error ml-2">Password is required.</small>
+							}
+						</div>
+						
+						<p-button type="submit" [rounded]="true" label="Submit" styleClass="w-full" />
+					</form>
+				</p-tabpanel>
+			</p-tabpanels>
+		</p-tabs>
+	</p-card>
 </div>
