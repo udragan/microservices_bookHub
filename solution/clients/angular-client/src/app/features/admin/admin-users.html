@@ -1,69 +1,108 @@
-<div [style.display]="'flex'">
-	<aside
-		[tuiNavigationAside]="expanded()">
-		<header>
-			<button
-				iconStart="@tui.home"
-				tuiAsideItem
-				type="button"
-				[routerLink]="[routes.AdminDashboard]"
-				[routerLinkActiveOptions]="{ exact: true }">
-				<span tuiFade>Home</span>
-			</button>
-		</header>
-		<button
-			iconStart="@tui.users"
-			tuiAsideItem
-			type="button"
-			[routerLink]="[routes.AdminUsers]"
-			[routerLinkActiveOptions]="{ exact: true }">
-			<span tuiFade>Users</span>
-		</button>
-		<hr />
-		<footer>
-			<button
-				tuiAsideItem
-				type="button"
-				[iconStart]="expanded() ? '@tui.chevron-left' : '@tui.chevron-right'"
-				(click)="handleToggle()">
-				{{ expanded() ? 'Collapse' : 'Expand' }}
-			</button>
-		</footer>
-	</aside>
-	<main tuiNavigationMain>
-		<nav
-			compact
-			tuiSubheader
-			[style.position]="'sticky'">
-			<tui-breadcrumbs [itemsLimit]="10">
-				@for (item of breadcrumbs; track $index; let last = $last) {
-					<ng-container>
-						@if (last) {
-							<ng-container>
-								<strong
-									*tuiItem
-									tuiFade>
-									{{ item }}
-								</strong>
-							</ng-container>
-						}
-						@if (!last) {
-							<ng-container>
-								<button
-									*tuiItem
-									tuiLink
-									type="button">
-									{{ item }}
-								</button>
-							</ng-container>
-						}
-					</ng-container>
-				}
-			</tui-breadcrumbs>
-		</nav>
-		<ng-container>			
-			<label>content</label>
-		</ng-container>
+<!-- <div [style.display]="'flex'">
+  <aside
+    [tuiNavigationAside]="expanded()">
+    <header>
+      <button
+        iconStart="@tui.home"
+        tuiAsideItem
+        type="button"
+        [routerLink]="[routes.AdminDashboard]"
+        [routerLinkActiveOptions]="{ exact: true }">
+        <span tuiFade>Home</span>
+      </button>
+    </header>
+    <button
+      iconStart="@tui.users"
+      tuiAsideItem
+      type="button"
+      [routerLink]="[routes.AdminUsers]"
+      [routerLinkActiveOptions]="{ exact: true }">
+      <span tuiFade>Users</span>
+    </button>
+    <hr />
+    <footer>
+      <button
+        tuiAsideItem
+        type="button"
+        [iconStart]="expanded() ? '@tui.chevron-left' : '@tui.chevron-right'"
+        (click)="handleToggle()">
+        {{ expanded() ? 'Collapse' : 'Expand' }}
+      </button>
+    </footer>
+  </aside>
+  <main tuiNavigationMain>
+    <nav
+      compact
+      tuiSubheader
+      [style.position]="'sticky'">
+      <tui-breadcrumbs [itemsLimit]="10">
+        @for (item of breadcrumbs; track $index; let last = $last) {
+          <ng-container>
+            @if (last) {
+              <ng-container>
+                <strong
+                  *tuiItem
+                  tuiFade>
+                  {{ item }}
+                </strong>
+              </ng-container>
+            }
+            @if (!last) {
+              <ng-container>
+                <button
+                  *tuiItem
+                  tuiLink
+                  type="button">
+                  {{ item }}
+                </button>
+              </ng-container>
+            }
+          </ng-container>
+        }
+      </tui-breadcrumbs>
+    </nav> -->
 
-	</main>
-</div>
+
+
+
+
+    <!-- <ng-container> -->
+    <!-- <ng-container *ngIf="loading; else tableTemplate">
+    <tui-loader
+      size="l"
+      textContent="Loading users..."
+      [showLoader]="true">
+    </tui-loader>
+  </ng-container>
+  <ng-template #tableTemplate> -->
+    <!-- <tui-loader [showLoader]="loading"></tui-loader>
+    <table tuiTable>...</table> -->
+
+
+
+
+
+
+    <!-- <tui-loader
+      [showLoader]="loading"
+      [overlay]="true"
+      class="loader"
+      >
+      <table tuiTable [columns]="columns">
+        <thead>
+          <tr tuiThGroup>
+            <th tuiTh>Column 1</th>
+          </tr>
+        </thead>
+        <tbody tuiTbody>
+          @for (item of users(); track item) {
+            <tr tuiTr>
+              <td tuiTd>{{ item }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </tui-loader>
+  <!-- </ng-container> ->
+</main>
+</div> -->
