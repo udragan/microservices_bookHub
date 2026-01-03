@@ -1,5 +1,10 @@
 <div class="card-container">
-	<p-card header="BookHub" [style]="{ width: '25rem', overflow: 'hidden' }">
+	<p-card [style]="{ width: '25rem', overflow: 'hidden' }">
+		<ng-template #header>
+			<div class="card-header-container">
+				<img src="assets/images/logo.png" alt="Card Logo" class="card-logo" />
+			</div>
+		</ng-template>
 		<p-tabs value="0">
 			<p-tablist>
 				<p-tab value="0">Login</p-tab>

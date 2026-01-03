@@ -25,7 +25,8 @@
                 "glob": "**/*",
                 "input": "node_modules/primeicons/fonts",
                 "output": "assets/fonts"
-              }
+              },
+              "src/assets"
             ],
             "styles": [
               "node_modules/primeflex/primeflex.css",
