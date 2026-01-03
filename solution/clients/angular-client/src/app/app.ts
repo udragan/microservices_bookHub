@@ -1,8 +1,5 @@
-import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { TuiAppearance, TuiDataList, TuiDropdown, TuiRoot, TuiTextfield } from '@taiga-ui/core'
-import { TuiAvatar, TuiBadgeNotification, TuiTabs } from '@taiga-ui/kit';
-import { TuiNavigation } from '@taiga-ui/layout';
 
 import { AuthService } from './features/auth/auth.service';
 import { MediaService } from './core/services/media.service';
@@ -10,18 +7,7 @@ import { MediaService } from './core/services/media.service';
 @Component({
 	selector: 'app-root',
 	imports: [
-		RouterOutlet,
-		TuiRoot,
-		TuiBadgeNotification,
-		TuiAvatar,		
-		TuiAppearance,
-		TuiAvatar,
-		TuiBadgeNotification,
-		TuiDataList,
-		TuiDropdown,
-		TuiTabs,
-		TuiTextfield,
-		TuiNavigation,
+		RouterOutlet
 	],
 	templateUrl: './app.html',
 	styleUrl: './app.scss',
