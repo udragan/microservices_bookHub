@@ -5,16 +5,22 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class MediaService {
-  private apiUrl = '';
+	private apiUrl = '';
 
-  constructor(private http: HttpClient) {
+	constructor(private http: HttpClient) {
 		this.apiUrl = environment.apiBaseUrl + "/media";
 	}
+
+	// ------------------------------------------------------------------------
 	
 	getAvatar(): Observable<Blob> {
 		return this.http.get(`${this.apiUrl}/avatar`, {responseType: 'blob'});
-  }
+	}
+
+	uploadAvatar(data: FormData) : Observable<any> {
+		return this.http.post(`${this.apiUrl}/avatar`, data);
+	}
 }

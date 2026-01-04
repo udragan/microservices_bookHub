@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
 
 import { MenuItem, SharedModule } from 'primeng/api';
 import { Avatar } from 'primeng/avatar'
@@ -13,6 +12,7 @@ import { Toolbar } from 'primeng/toolbar'
 import { AppRoutes } from '../../app.routes';
 import { AuthService } from '../auth/auth.service';
 import { MediaService } from '../../core/services/media.service';
+import { UsersService } from '../../core/services/users.service';
 
 @Component({
 	selector: 'app-admin-main-layout',
@@ -30,14 +30,13 @@ import { MediaService } from '../../core/services/media.service';
 	templateUrl:'./admin-main-layout.html',
 	styleUrl: './admin-main-layout.scss',
 })
-export class AdminMainLayout implements OnInit, OnDestroy {	
+export class AdminMainLayout implements OnInit {	
 	private authService = inject(AuthService);
 	private mediaService = inject(MediaService);
-	private sanitizer = inject(DomSanitizer);
-
-	private avatarUrlRaw: string | null = null;
-	protected avatarUrlSignal = signal<any>(null);
+	private router = inject(Router);
+	private userService = inject(UsersService);
 	protected avatarMenuItems: MenuItem[] | undefined;
+	protected avatarUrlSignal = this.userService.avatarUrlSignal;
 	protected routes = AppRoutes;
 
 	constructor() {	}
@@ -49,17 +48,11 @@ export class AdminMainLayout implements OnInit, OnDestroy {
 		this.loadAvatarMenu();
 	}
 
-	ngOnDestroy(): void {
-		if (this.avatarUrlRaw) {
-			URL.revokeObjectURL(this.avatarUrlRaw);
-		}
-	}
-
 	loadAvatar() {
 		this.mediaService.getAvatar().subscribe({
 			next: response => {
-				this.avatarUrlRaw = URL.createObjectURL(response);
-				this.avatarUrlSignal.set(this.sanitizer.bypassSecurityTrustUrl(this.avatarUrlRaw));
+				const url = URL.createObjectURL(response);
+				this.userService.updateAvatar(url);
 			},
 			error: e => {
 				console.error(e)
@@ -78,7 +71,7 @@ export class AdminMainLayout implements OnInit, OnDestroy {
 	}
 
 	accountSettings() {
-
+		this.router.navigate([AppRoutes.AdminAccount])
 	}
 
 	logout() {

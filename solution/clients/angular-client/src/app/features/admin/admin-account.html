@@ -1,0 +1,27 @@
+<p-card>
+	<div class="flex justify-content-between align-items-center">
+		
+		<div class="flex flex-column gap-3">
+			<div class="flex flex-column">
+				<p-floatlabel variant="on">
+					<input pInputText id="email" formControlName="email" class="w-full" />
+					<label for="email">Email Address</label>
+				</p-floatlabel>
+			</div>
+			<div class="flex flex-column">
+				<p-floatlabel  variant="on">
+					<input pInputText id="name" formControlName="name" class="w-full" />
+					<label for="name">Name</label>
+				</p-floatlabel>	
+			</div>
+		</div>
+
+		<div class="flex flex-column align-items-center gap-3 pr-4">
+			<p-avatar [image]="$any(avatarUrlSignal())" size="xlarge" shape="circle" class="shadow-2" />
+
+			<div class="flex flex-column gap-2">
+				<p-fileUpload mode="basic" (onSelect)="onUploadAvatar($event)" [auto]="true" chooseLabel="Upload New" />
+			</div>
+		</div>
+	</div>
+</p-card>
