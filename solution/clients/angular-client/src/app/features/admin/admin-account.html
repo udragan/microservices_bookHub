@@ -20,7 +20,7 @@
 			<p-avatar [image]="$any(avatarUrlSignal())" size="xlarge" shape="circle" class="shadow-2" />
 
 			<div class="flex flex-column gap-2">
-				<p-fileUpload mode="basic" (onSelect)="onUploadAvatar($event)" [auto]="true" chooseLabel="Upload New" />
+				<p-fileUpload mode="basic" [customUpload]="true" (uploadHandler)="onUploadAvatar($event)" [auto]="true" chooseLabel="Upload New" />
 			</div>
 		</div>
 	</div>
