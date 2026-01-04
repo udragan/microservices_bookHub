@@ -1,40 +1,61 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { RouterOutlet, RouterLink } from '@angular/router';
 
-import { Avatar } from 'primeng/avatar'
 import { SharedModule } from 'primeng/api';
+import { Avatar } from 'primeng/avatar'
 import { Button } from 'primeng/button'
 import { Toolbar } from 'primeng/toolbar'
 
-import { AppRoutes } from '../../app.routes';
-import { User } from '../../core/models/user.model';
-import { UsersService } from '../../core/services/users.service';
-
+import { MediaService } from '../../core/services/media.service';
 
 @Component({
 	selector: 'app-admin-main-layout',
 	imports: [
-    FormsModule,
-	Avatar,
-	Button,
-	CommonModule,
-	Toolbar,
-    RouterLink,
-	RouterOutlet,
-	SharedModule,
-],
+		FormsModule,
+		Avatar,
+		Button,
+		CommonModule,
+		Toolbar,
+		RouterLink,
+		RouterOutlet,
+		SharedModule,
+	],
 	templateUrl:'./admin-main-layout.html',
 	styleUrl: './admin-main-layout.scss',
 })
-export class AdminMainLayout implements OnInit {
-	routes = AppRoutes;
+export class AdminMainLayout implements OnInit, OnDestroy {	
+	private mediaService = inject(MediaService);
+	private sanitizer = inject(DomSanitizer);
 
-	constructor(private usersService: UsersService) { }
+	private avatarUrlRaw: string | null = null;
+	protected avatarUrlSignal = signal<any>(null);
+
+	constructor() {	}
 
 	// ------------------------------------------------------------------------
-	ngOnInit(): void {
 
+	ngOnInit() : void {
+		this.loadAvatar();
+	}
+
+	ngOnDestroy(): void {
+		if (this.avatarUrlRaw) {
+			URL.revokeObjectURL(this.avatarUrlRaw);
+		}
+	}
+
+	loadAvatar() {
+		this.mediaService.getAvatar().subscribe({
+			next: response => {
+				this.avatarUrlRaw = URL.createObjectURL(response);
+				this.avatarUrlSignal.set(this.sanitizer.bypassSecurityTrustUrl(this.avatarUrlRaw));
+			},
+			error: e => {
+				console.error(e)
+			}
+		});
 	}
 }

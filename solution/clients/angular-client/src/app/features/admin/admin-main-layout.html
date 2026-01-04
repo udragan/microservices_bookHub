@@ -6,13 +6,18 @@
 						class=" logo-no-hover" routerLink="/">
 						<img src="assets/images/logo.png" alt="Logo" class="h-2rem w-auto" />
 					</p-button>
-					<span class="font-bold" routerLink="/">System Dashboard</span>
+					<span class="font-bold">System Dashboard</span>
 				</div>
 		</ng-template>
 		<ng-template pTemplate="end">
-				<p-button label="Home" icon="pi pi-home" routerLink="/" />
 				<p-button label="Settings" icon="pi pi-cog" routerLink="/settings" />
-				<p-avatar image="test.png" shape="circle" class="ml-3" />
+				<p-avatar shape="circle" class="ml-3">
+					@if (avatarUrlSignal()) {
+						<img [src]="avatarUrlSignal()" alt="avatar" />
+					} @else {
+						<i class="pi pi-user"></i>
+					}
+				</p-avatar>
 		</ng-template>
 </p-toolbar>
 
