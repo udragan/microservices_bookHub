@@ -15,8 +15,8 @@
 					<form [formGroup]="formLogin" (submit)="login()" class="flex flex-column gap-4 w-full">
 						<div class="flex flex-column gap-1">
 							<p-floatlabel variant="on">
-								<input pInputText id="email" formControlName="email" class="w-full" />
-								<label for="email">Email Address</label>
+								<input pInputText id="loginEmail" formControlName="email" class="w-full" />
+								<label for="loginEmail">Email Address</label>
 							</p-floatlabel>
 							
 							@if (formLogin.get('email')?.invalid && formLogin.get('email')?.dirty) {
@@ -29,8 +29,8 @@
 
 						<div class="flex flex-column gap-1">
 							<p-floatlabel  variant="on">
-								<input pInputText type="password" id="password" formControlName="password" class="w-full" />
-								<label for="password">Password</label>
+								<input pInputText type="password" id="loginPassword" formControlName="password" class="w-full" />
+								<label for="loginPassword">Password</label>
 							</p-floatlabel>
 							
 							@if (formLogin.get('password')?.invalid && formLogin.get('password')?.dirty) {
@@ -45,8 +45,8 @@
 					<form [formGroup]="formRegister" (submit)="register()" class="flex flex-column gap-4 w-full">
 						<div class="flex flex-column gap-1">
 							<p-floatlabel  variant="on">
-								<input pInputText id="name" formControlName="name" class="w-full" />
-								<label for="name">Name</label>
+								<input pInputText id="registerName" formControlName="name" class="w-full" />
+								<label for="registerName">Name</label>
 							</p-floatlabel>							
 							
 							@if (formRegister.get('name')?.invalid && formRegister.get('name')?.dirty) {
@@ -58,8 +58,8 @@
 
 						<div class="flex flex-column gap-1">
 							<p-floatlabel variant="on">
-								<input pInputText id="email" formControlName="email" class="w-full" />
-								<label for="email">Email Address</label>
+								<input pInputText id="registerEmail" formControlName="email" class="w-full" />
+								<label for="registerEmail">Email Address</label>
 							</p-floatlabel>
 							
 							@if (formRegister.get('email')?.invalid && formRegister.get('email')?.dirty) {
@@ -72,8 +72,8 @@
 
 						<div class="flex flex-column gap-1">
 							<p-floatlabel  variant="on">
-								<input pInputText type="password" id="password" formControlName="password" class="w-full" />
-								<label for="password">Password</label>
+								<input pInputText type="password" id="registerPassword" formControlName="password" class="w-full" />
+								<label for="registerPassword">Password</label>
 							</p-floatlabel>
 							
 							@if (formRegister.get('password')?.invalid && formRegister.get('password')?.dirty) {
