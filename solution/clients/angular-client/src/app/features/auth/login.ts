@@ -46,7 +46,9 @@ export class Login {
 		email: new FormControl('', [Validators.required, Validators.email]),
 		password: new FormControl('', Validators.required)
 	});
+
 	// ------------------------------------------------------------------------
+	
 	login() {
 		if (this.formLogin.valid) {
 			const formData = this.formLogin.value;
