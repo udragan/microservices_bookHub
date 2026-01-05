@@ -1,6 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive} from '@angular/router';
+
+import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
+import { FloatLabel } from 'primeng/floatlabel';
+import { InputText } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
 
 import { AppRoutes } from '../../app.routes';
 import { User } from '../../core/models/user.model';
@@ -10,27 +15,31 @@ import { UsersService } from '../../core/services/users.service';
 @Component({
 	selector: 'app-admin-users',
 	imports: [
-    FormsModule,
-    RouterLink,
-    RouterLinkActive,
-],
+		Button,
+		Dialog,
+		FloatLabel,
+		FormsModule,
+		InputText,
+		TableModule,
+	],
 	templateUrl:'./admin-users.html',
 	styleUrl: './admin-users.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminUsers implements OnInit {
-	routes = AppRoutes;
- 	protected expanded = signal(false);
-	protected readonly breadcrumbs = ['Home', 'Admin', 'Users'];
+	private userService = inject(UsersService);
+	protected routes = AppRoutes;
 
-	columns = ["Id", "Name", "Email", "Role", "Actions"];
-	users = signal<User[]>([]);
+	protected users = signal<User[]>([]);
+	selectedUserSignal = signal<User | null>(null);
+	displayDialogSignal = signal(false);
 	loading = true;
 
-	constructor(private usersService: UsersService) { }
+	constructor() { }
+
+	// ------------------------------------------------------------------------
 
 	ngOnInit(): void {
-		this.usersService.getAllUsers().subscribe({
+		this.userService.getAllUsers().subscribe({
 			next: response => {
 				this.users.set(response);
 				this.loading = false;
@@ -42,7 +51,25 @@ export class AdminUsers implements OnInit {
 		});
 	}
 
-	protected handleToggle(): void {
-		this.expanded.update((e) => !e);
+	editUser(user: User) {
+		this.selectedUserSignal.set({ ...user }); 
+		this.displayDialogSignal.set(true);
+	}
+
+	saveUser() {
+		const updatedUser = this.selectedUserSignal();
+		if (updatedUser) {
+			this.userService.updateUser(updatedUser).subscribe({
+				next: _ => {
+					this.users.update(prev => 
+						prev.map(u => u.id === updatedUser.id ? updatedUser : u)
+					);
+					this.displayDialogSignal.set(false);
+				},
+				error: e => {
+					console.log(e)
+				}
+			});	
+		}
 	}
 }

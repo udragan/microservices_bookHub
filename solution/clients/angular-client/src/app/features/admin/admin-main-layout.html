@@ -1,13 +1,16 @@
 <p-toolbar class="bg-primary border-none border-noround p-2 shadow-2">
 	<ng-template pTemplate="start">
-		<div class="flex align-items-center gap-2">
+		<div class="flex align-items-center gap-2 w-15rem overflow-hidden white-space-nowrap">
 			<p-button aria-label="Home"
 				[link]="true" 
 				class=" logo-no-hover" [routerLink]="routes.Home">
 				<img src="assets/images/logo.png" alt="Logo" class="h-2rem w-auto" />
 			</p-button>
-			<span class="font-bold" >{{ captionSignal() }}</span>
+			<span class="font-bold">{{ captionSignal() }}</span>
 		</div>
+	</ng-template>
+	<ng-template pTemplate="center">
+		<p-button label="Users" [routerLink]="routes.AdminUsers" />
 	</ng-template>
 	<ng-template pTemplate="end">
 		<p-button label="Settings" icon="pi pi-bell" [routerLink]="routes.AdminNotifications" />
