@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { RouterOutlet, RouterLink, Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 
 import { MenuItem, SharedModule } from 'primeng/api';
 import { Avatar } from 'primeng/avatar'
@@ -33,13 +34,30 @@ import { UsersService } from '../../core/services/users.service';
 export class AdminMainLayout implements OnInit {	
 	private authService = inject(AuthService);
 	private mediaService = inject(MediaService);
+	private route = inject(ActivatedRoute);
 	private router = inject(Router);
 	private userService = inject(UsersService);
 	protected avatarMenuItems: MenuItem[] | undefined;
 	protected avatarUrlSignal = this.userService.avatarUrlSignal;
+	protected captionSignal = signal<string>('');
 	protected routes = AppRoutes;
 
-	constructor() {	}
+	constructor() {
+		this.router.events.pipe(
+			filter(event => event instanceof NavigationEnd)).subscribe({
+				next: _ => {
+					let child = this.route.firstChild;
+					while (child?.firstChild) {
+						child = child.firstChild;
+					}					
+					const newCaption = child?.snapshot.data['caption'] || '';
+					this.captionSignal.set(newCaption);
+				},
+				error: e => {
+					console.error(e);
+				}
+			});
+	}
 
 	// ------------------------------------------------------------------------
 
@@ -64,7 +82,7 @@ export class AdminMainLayout implements OnInit {
 		this.avatarMenuItems = [{
 			label: 'Options',
 			items: [
-				{ label: 'Settings', icon: 'pi pi-refresh', command: () => this.accountSettings() },
+				{ label: 'Account', icon: 'pi pi-user-edit', command: () => this.accountSettings() },
 				{ label: 'Logout', icon: 'pi pi-sign-out', command: () => this.logout() }
 			]
 		}]
