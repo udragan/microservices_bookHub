@@ -16,9 +16,9 @@ export const routes: Routes = [
 		path: 'admin',
 		component: AdminMainLayout,
 		children: [
-			{ path: 'dashboard', component: AdminDashboard, canActivate: [AdminGuard] },
-			{ path: 'users', component: AdminUsers, canActivate: [AdminGuard] },
-			{ path: 'account', component: AdminAccount, canActivate: [AdminGuard] },
+			{ path: 'dashboard', component: AdminDashboard, canActivate: [AdminGuard], data: { caption: 'Admin - Dashboard' }},
+			{ path: 'users', component: AdminUsers, canActivate: [AdminGuard], data: { caption: 'Admin - Users' }},
+			{ path: 'account', component: AdminAccount, canActivate: [AdminGuard], data: { caption: 'Admin - Account' }},
 		]
 	}
 ];
