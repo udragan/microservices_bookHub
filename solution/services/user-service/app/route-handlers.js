@@ -66,6 +66,22 @@ export async function updateUser(request, response) {
 	}
 }
 
+export async function passwordReset(request, response) {
+	const { id } = request.body;
+	const user = await User.findByPk(id);
+	if (!user) {
+		return response.status(404).json({ message: 'User not found' });
+	}
+	const hash = await bcrypt.hash("1234", 10);	// TODO_faja: do not use hardcoded default pass but random generate and send to user email!
+	try {
+		await user.update({ "password": hash });
+		// TODO_faja: logout all sessions?
+		response.json({ message: 'Your password has been successfully reset. You can now log in with your new credentials.' });
+	} catch (err) {
+		response.status(400).json({ error: err.message });
+	}
+}
+
 export async function deleteUser(req, res) {
 	const user = await User.findByPk(req.params.id);
 	if (!user) {
