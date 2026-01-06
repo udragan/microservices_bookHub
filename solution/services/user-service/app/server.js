@@ -2,10 +2,10 @@ import express, { json } from 'express';
 import { exec } from 'child_process';
 import util from 'util';
 
-import { jwtAuthMiddleware, jwtAuthMiddlewareCheckRoles as jwtAuthMiddlewareSupportedRoles } from './auth/authorization.js';
+import { jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles } from './auth/authorization.js';
 import { db } from './db/models/index.js'
 import { userRoles } from './enums/user-roles.js'
-import { verifyCredentials, registerUser, getAll, getById, updateUser, deleteUser } from './route-handlers.js'
+import { verifyCredentials, registerUser, getAll, getById, updateUser, passwordReset, deleteUser } from './route-handlers.js'
 
 const app = express();
 const port = 8002;
@@ -21,6 +21,7 @@ app.post('/register', registerUser);
 app.get('/', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR), getAll);
 app.get('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR, userRoles.USER), getById);
 app.put('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.USER), updateUser);
+app.post('/passwordReset', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN), passwordReset);
 app.delete('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.USER), deleteUser);
 // #####################################
 

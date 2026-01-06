@@ -39,7 +39,7 @@ function jwtAuthMiddleware(req, res, next) {
     });
 }
 
-function jwtAuthMiddlewareCheckRoles(...roles) {
+function jwtAuthMiddlewareSupportedRoles(...roles) {
 	return async (req, res, next) => {
 		const pathId = req.params.id;	
 		const tokenId = req.user.sub;
@@ -51,4 +51,4 @@ function jwtAuthMiddlewareCheckRoles(...roles) {
 	}
 }
 
-export  { jwtAuthMiddleware, jwtAuthMiddlewareCheckRoles };
+export  { jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles };
