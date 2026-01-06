@@ -25,18 +25,18 @@
 </p-table>
 
 <p-dialog header="Edit User" [(visible)]="displayDialogSignal" [modal]="true">
-	@if (selectedUserSignal()) {		
+	@if (selectedUserSignal(); as selectedUser) {		
 		<div class="flex flex-column gap-4 pt-2">
 			<p-floatlabel variant="on">			
-				<input id="email" pInputText disabled="true" [ngModel]="selectedUserSignal()!.email" class="w-full" />
+				<input id="email" pInputText disabled="true" [ngModel]="selectedUser.email" class="w-full" />
 				<label for="email">Email Address</label>
 			</p-floatlabel>
 			<p-floatlabel variant="on">			
-				<input id="name" pInputText [(ngModel)]="selectedUserSignal()!.name" class="w-full" />
+				<input id="name" pInputText [(ngModel)]="selectedUser.name" class="w-full" />
 				<label for="name">Name</label>
 			</p-floatlabel>
 			<p-floatlabel variant="on">			
-				<input id="role" pInputText [(ngModel)]="selectedUserSignal()!.role" class="w-full" />
+				<p-select inputId="role" [options]="roles" [(ngModel)]="selectedUser.role" appendTo="body" class="w-full" />
 				<label for="role">Role</label>
 			</p-floatlabel>
 		</div>
