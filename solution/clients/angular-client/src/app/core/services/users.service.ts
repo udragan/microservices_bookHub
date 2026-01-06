@@ -12,11 +12,12 @@ import { User } from '../models/user.model';
 export class UsersService {
 	private apiUrl = '';
 	
+	private http = inject(HttpClient);
 	private sanitizer = inject(DomSanitizer);
 	
 	avatarUrlSignal = signal<any>(null);
 	
-	constructor(private http: HttpClient) {
+	constructor() {
 		this.apiUrl = environment.apiBaseUrl + "/users";
 	}
 
@@ -33,5 +34,9 @@ export class UsersService {
 
 	updateUser(user: User) : Observable<User> {
 		return this.http.put<User>(`${this.apiUrl}/${user.id}`, user);
+	}
+
+	passwordReset(userId: number) : Observable<string> {
+		return this.http.post<string>(`${this.apiUrl}/passwordReset`, { "id": userId });
 	}
 }
