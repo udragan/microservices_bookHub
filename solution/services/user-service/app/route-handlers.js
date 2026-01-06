@@ -56,10 +56,9 @@ export async function updateUser(request, response) {
 	if (!user) {
 		return response.status(404).json({ message: 'User not found' });
 	}
-	const { name, password, role } = request.body;
-	const hash = await bcrypt.hash(password, 10);
+	const { name, role } = request.body;
 	try {
-		await user.update({ "name": name, "password": hash, "role": role });
+		await user.update({ "name": name, "role": role });
 		const userDto = toUserDto(user);
 		response.json(userDto);
 	} catch (err) {
