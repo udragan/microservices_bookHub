@@ -5,6 +5,7 @@ import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
+import { Select } from "primeng/select";
 import { TableModule } from 'primeng/table';
 
 import { AppRoutes } from '../../app.routes';
@@ -15,24 +16,27 @@ import { UsersService } from '../../core/services/users.service';
 @Component({
 	selector: 'app-admin-users',
 	imports: [
-		Button,
-		Dialog,
-		FloatLabel,
-		FormsModule,
-		InputText,
-		TableModule,
-	],
+    Button,
+    Dialog,
+    FloatLabel,
+    FormsModule,
+    InputText,
+    TableModule,
+    Select
+],
 	templateUrl:'./admin-users.html',
 	styleUrl: './admin-users.scss',
 })
 export class AdminUsers implements OnInit {
 	private userService = inject(UsersService);
+	
 	protected routes = AppRoutes;
+	protected roles = ["admin", "moderator", "user"];
 
 	protected users = signal<User[]>([]);
-	selectedUserSignal = signal<User | null>(null);
-	displayDialogSignal = signal(false);
-	loading = true;
+	protected selectedUserSignal = signal<User | null>(null);
+	protected displayDialogSignal = signal(false);
+	protected loading = true;
 
 	constructor() { }
 
