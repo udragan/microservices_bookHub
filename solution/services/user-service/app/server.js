@@ -2,8 +2,9 @@ import express, { json } from 'express';
 import { exec } from 'child_process';
 import util from 'util';
 
+import { jwtAuthMiddleware, jwtAuthMiddlewareCheckRoles as jwtAuthMiddlewareSupportedRoles } from './auth/authorization.js';
 import { db } from './db/models/index.js'
-import jwtAuthMiddleware from './auth/authorization.js';
+import { userRoles } from './enums/user-roles.js'
 import { verifyCredentials, registerUser, getAll, getById, updateUser, deleteUser } from './route-handlers.js'
 
 const app = express();
@@ -17,10 +18,10 @@ app.use(json());
 // internal verify user
 app.post('/internal/verify', verifyCredentials);
 app.post('/register', registerUser);
-app.get('/', jwtAuthMiddleware,  getAll);
-app.get('/:id', jwtAuthMiddleware, getById);
-app.put('/:id', jwtAuthMiddleware, updateUser);
-app.delete('/:id', jwtAuthMiddleware, deleteUser);
+app.get('/', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR), getAll);
+app.get('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR, userRoles.USER), getById);
+app.put('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.USER), updateUser);
+app.delete('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.USER), deleteUser);
 // #####################################
 
 async function runMigrations() {

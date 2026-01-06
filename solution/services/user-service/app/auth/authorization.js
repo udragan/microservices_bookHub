@@ -2,6 +2,7 @@ import { JWKS_URL } from '../env.js';
 import pkg from 'jsonwebtoken';
 const { verify } = pkg;
 import jwksClient from 'jwks-rsa';
+import { userRoles } from '../enums/user-roles.js';
 
 const client = jwksClient({
     jwksUri: JWKS_URL
@@ -38,4 +39,16 @@ function jwtAuthMiddleware(req, res, next) {
     });
 }
 
-export default jwtAuthMiddleware;
+function jwtAuthMiddlewareCheckRoles(...roles) {
+	return async (req, res, next) => {
+		const pathId = req.params.id;	
+		const tokenId = req.user.sub;
+		if (!roles.includes(req.user.role) ||
+			req.user.role == userRoles.USER && pathId && pathId != tokenId) {
+			return res.status(403).json({ error: 'Insufficient permissions' });
+		}
+		next();
+	}
+}
+
+export  { jwtAuthMiddleware, jwtAuthMiddlewareCheckRoles };
