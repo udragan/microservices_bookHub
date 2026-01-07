@@ -43,6 +43,23 @@ export class AuthService {
 		return localStorage.getItem(this.TOKEN_KEY);
 	}
 
+	getUserId() : number {
+		const token = this.getToken();
+		if (token === null) {
+			return 0;
+		}
+		try {
+			const decoded = jwtDecode(token);
+			const id = decoded.sub;
+			if (id) {
+				return +id ;
+			}
+			return 0;
+		} catch {
+			return 0;
+		}
+	}
+
 	isAuthenticated(): boolean {
 		var token = this.getToken();
 		if (token === null) {

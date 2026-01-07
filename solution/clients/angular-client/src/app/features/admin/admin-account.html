@@ -1,27 +1,36 @@
-<p-card>
-	<div class="flex justify-content-between align-items-center">
-		
-		<div class="flex flex-column gap-3">
-			<div class="flex flex-column">
-				<p-floatlabel variant="on">
-					<input pInputText id="email" formControlName="email" class="w-full" />
-					<label for="email">Email Address</label>
-				</p-floatlabel>
-			</div>
-			<div class="flex flex-column">
-				<p-floatlabel  variant="on">
-					<input pInputText id="name" formControlName="name" class="w-full" />
-					<label for="name">Name</label>
-				</p-floatlabel>	
+<div class="flex flex-column align-items-center">
+	<p-card [style]="{ width: '40rem' }">
+		<div class="flex justify-content-between align-items-center">
+			<form [formGroup]="formUpdateAccount" (submit)="saveChanges()" class="flex flex-column gap-4 w-25rem">
+				<div class="flex flex-column gap-1">
+					<p-floatlabel variant="on">
+						<input pInputText id="email" formControlName="email" class="w-full" />
+						<label for="email">Email Address</label>
+					</p-floatlabel>
+				</div>
+
+				<div class="flex flex-column gap-1">
+					<p-floatlabel  variant="on">
+						<input pInputText id="name" formControlName="name" class="w-full" />
+						<label for="name">Name</label>
+					</p-floatlabel>
+					
+					@if (formUpdateAccount.get('name')?.invalid && formUpdateAccount.get('name')?.dirty) {
+						<small class="p-error ml-2">Name is required.</small>
+					}
+				</div>
+
+				<p-button type="submit" [rounded]="true" [disabled]="formUpdateAccount.invalid" label="Save" styleClass="w-full" />
+			</form>
+
+			<div class="flex flex-column align-items-center gap-3 pr-4">
+				<p-avatar [image]="$any(avatarUrlSignal())" size="xlarge" shape="circle" class="shadow-2" />
+
+				<div class="flex flex-column gap-2">
+					<p-fileUpload mode="basic" [customUpload]="true" (uploadHandler)="onUploadAvatar($event)" [auto]="true" chooseLabel="Upload New" />
+				</div>
 			</div>
 		</div>
-
-		<div class="flex flex-column align-items-center gap-3 pr-4">
-			<p-avatar [image]="$any(avatarUrlSignal())" size="xlarge" shape="circle" class="shadow-2" />
-
-			<div class="flex flex-column gap-2">
-				<p-fileUpload mode="basic" [customUpload]="true" (uploadHandler)="onUploadAvatar($event)" [auto]="true" chooseLabel="Upload New" />
-			</div>
-		</div>
-	</div>
-</p-card>
+	</p-card>
+</div>
+<p-toast pRipple position="bottom-right" />
