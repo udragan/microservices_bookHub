@@ -21,7 +21,7 @@ app.post('/register', registerUser);
 app.get('/', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR), getAll);
 app.get('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR, userRoles.USER), getById);
 app.put('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.USER), updateUser);
-app.post('/:id/passwordChange', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.USER, userRoles.MODERATOR, userRoles.USER), passwordChange);
+app.post('/:id/passwordChange', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR, userRoles.USER), passwordChange);
 app.post('/passwordReset', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN), passwordReset);
 app.delete('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.USER), deleteUser);
 // #####################################
