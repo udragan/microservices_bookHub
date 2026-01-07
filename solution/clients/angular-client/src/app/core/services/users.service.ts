@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { ServiceResponse } from '../models/service-response.model';
 import { User } from '../models/user.model';
 
 @Injectable({
@@ -28,23 +29,23 @@ export class UsersService {
 		this.avatarUrlSignal.set(url);
 	}
 	
-	getAllUsers(): Observable<User[]> {
-		return this.http.get<User[]>(`${this.apiUrl}`);
+	getAllUsers(): Observable<ServiceResponse<User[]>> {
+		return this.http.get<ServiceResponse<User[]>>(`${this.apiUrl}`);
 	}
 
-	getUserById(): Observable<User> {
-		return this.http.get<User>(`${this.apiUrl}/user`);
+	getUserById(): Observable<ServiceResponse<User>> {
+		return this.http.get<ServiceResponse<User>>(`${this.apiUrl}/user`);
 	}
 
-	updateUser(user: User) : Observable<User> {
-		return this.http.put<User>(`${this.apiUrl}/user`, user);
+	updateUser(user: User) : Observable<ServiceResponse<User>> {
+		return this.http.put<ServiceResponse<User>>(`${this.apiUrl}/user`, user);
 	}
 	
-	passwordChange(data: { password: string, newPassword: string, newPasswordRepeat: string }) : Observable<any> {
-		return this.http.post<string>(`${this.apiUrl}/user/passwordChange`, data);
+	passwordChange(data: { password: string, newPassword: string, newPasswordRepeat: string }) : Observable<ServiceResponse<number>> {
+		return this.http.post<ServiceResponse<number>>(`${this.apiUrl}/user/passwordChange`, data);
 	
 	}
-	passwordReset(userId: number) : Observable<string> {
-		return this.http.post<string>(`${this.apiUrl}/passwordReset`, { "id": userId });
+	passwordReset(userId: number) : Observable<ServiceResponse<null>> {
+		return this.http.post<ServiceResponse<null>>(`${this.apiUrl}/passwordReset`, { "id": userId });
 	}
 }

@@ -4,13 +4,14 @@ from fastapi import UploadFile, HTTPException, status
 from fastapi.responses import FileResponse
 
 from app.auth.authorization import JwtUser, is_admin
+from app.common.models.service_response import ServiceResponse
 
 MEDIA_DIR = os.getenv("MEDIA_STORAGE_PATH")
 AVATARS_PATH = os.path.join(MEDIA_DIR, "avatars")
 os.makedirs(AVATARS_PATH, exist_ok=True)
 
 async def upload_avatar(file: UploadFile,
-            jwt: JwtUser) -> str | HTTPException:
+            jwt: JwtUser) -> ServiceResponse | HTTPException:
     if not await remove_avatar(jwt):
         return
     file_ext = os.path.splitext(file.filename)[1]
@@ -22,7 +23,7 @@ async def upload_avatar(file: UploadFile,
             buffer.write(content)
     except:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="Unable to save media file")
-    return {"avatar_path": filename}
+    return ServiceResponse(filename, 'Success')
 
 async def get_avatar(jwt: JwtUser) -> FileResponse | HTTPException:
     filename = jwt.id

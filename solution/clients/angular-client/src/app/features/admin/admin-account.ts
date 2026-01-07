@@ -70,9 +70,9 @@ export class AdminAccount implements OnInit {
 
 		this.userService.getUserById().subscribe({
 			next: response => {
-				this.currentUser = response;
-				this.formUpdateAccount.controls.email.setValue(response.email);
-				this.formUpdateAccount.controls.name.setValue(response.name);
+				this.currentUser = response.data;
+				this.formUpdateAccount.controls.email.setValue(response.data.email);
+				this.formUpdateAccount.controls.name.setValue(response.data.name);
 			},
 			error: e => { console.log(e); }
 		})

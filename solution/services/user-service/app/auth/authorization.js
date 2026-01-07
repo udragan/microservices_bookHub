@@ -2,7 +2,7 @@ import { JWKS_URL } from '../env.js';
 import pkg from 'jsonwebtoken';
 const { verify } = pkg;
 import jwksClient from 'jwks-rsa';
-import { userRoles } from '../enums/user-roles.js';
+import { userRoles } from '../common/enums/user-roles.js';
 
 const client = jwksClient({
     jwksUri: JWKS_URL

@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
 import { db } from './db/models/index.js';
+
+import { ServiceResponse }  from './common/models/service-response.js';
 import { toUserDto }  from './mappers/user-mapper.js';
 
 const User = db.User;
@@ -36,51 +38,51 @@ export async function getAll(request, response) {
 	const users = await User.findAll();
 	const userDtos = users.map(user => toUserDto(user))
 		.sort((x, y) => x.id - y.id);
-	response.json(userDtos);
+	response.json(ServiceResponse.success(userDtos));
 }
 
 export async function getById(request, response) {
 	const user = await User.findByPk(request.user.sub);
 	if (!user) {
-		return response.status(404).json({ message: 'User not found' });
+		return response.status(404).json(ServiceResponse.fail('User not found'));
 	}
 	const userDto = toUserDto(user);
-	response.json(userDto);
+	response.json(ServiceResponse.success(userDto));
 }
 
 export async function updateById(request, response) {
 	const user = await User.findByPk(request.user.sub);
 	if (!user) {
-		return response.status(404).json({ message: 'User not found' });
+		return response.status(404).json(ServiceResponse.fail('User not found'));
 	}
 	const { name, role } = request.body;
 	try {
 		await user.update({ "name": name, "role": role });
 		const userDto = toUserDto(user);
-		response.json(userDto);
+		response.json(ServiceResponse.success(userDto));
 	} catch (err) {
-		response.status(400).json({ error: err.message });
+		response.status(400).json(ServiceResponse.fail(err.message));
 	}
 }
 
 export async function passwordChange(request, response) {
 	const user = await User.findByPk(request.user.sub);
 	if (!user) {
-		return response.status(404).json({ message: 'User not found' });
+		return response.status(404).json(ServiceResponse.fail('User not found'));
 	}
 	const { password, newPassword, newPasswordRepeat } = request.body;
 	if (newPassword != newPasswordRepeat) {
-		return response.status(400).json({ error: "The new password and confirmation password did not match." });
+		return response.status(400).json(ServiceResponse.fail('The new password and confirmation password did not match.'));
 	}
 	try {
 		if (!bcrypt.compareSync(password, user.password)) {
-			return response.status(400).send({ error: 'Invalid current password.' });
+			return response.status(400).send(ServiceResponse.fail('Invalid current password.'));
 		}
 		const hash = await bcrypt.hash(newPassword, 10);
 		await user.update({ "password": hash });
-		response.json({ message: "Password changed successfully." });
+		response.json(ServiceResponse.success(user.id, 'Password changed successfully.'));
 	} catch (err) {
-		response.status(400).json({ error: err.message });
+		response.status(400).json(ServiceResponse.fail(err.message));
 	}
 }
 
@@ -88,23 +90,23 @@ export async function passwordReset(request, response) {
 	const { id } = request.body;
 	const user = await User.findByPk(id);
 	if (!user) {
-		return response.status(404).json({ message: 'User not found' });
+		return response.status(404).json(ServiceResponse.fail('User not found'));
 	}
 	const hash = await bcrypt.hash("1234", 10);	// TODO_faja: do not use hardcoded default pass but random generate and send to user email!
 	try {
 		await user.update({ "password": hash });
 		// TODO_faja: logout all sessions?
-		response.json({ message: 'Your password has been successfully reset. You can now log in with your new credentials.' });
+		response.json(ServiceResponse.success(id, 'Your password has been successfully reset. You can now log in with your new credentials.'));
 	} catch (err) {
-		response.status(400).json({ error: err.message });
+		response.status(400).json(ServiceResponse.fail(err.message));
 	}
 }
 
-export async function deleteUser(req, res) {
-	const user = await User.findByPk(req.params.id);
+export async function deleteUser(request, response) {
+	const user = await User.findByPk(request.params.id);
 	if (!user) {
-		return res.status(404).json({ message: 'User not found' });
+		return response.status(404).json(ServiceResponse.fail('User not found'));
 	}
 	await user.destroy();
-	res.json({ message: 'User deleted' });
+	response.json(ServiceResponse.success(user.id, 'User deleted'));
 }

@@ -56,7 +56,7 @@ export class AdminUsers implements OnInit {
 	ngOnInit(): void {
 		this.userService.getAllUsers().subscribe({
 			next: response => {
-				this.users.set(response);
+				this.users.set(response.data);
 				this.loading = false;
 			},
 			error: e => {

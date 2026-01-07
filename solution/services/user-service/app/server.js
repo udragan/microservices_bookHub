@@ -4,7 +4,7 @@ import util from 'util';
 
 import { jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles } from './auth/authorization.js';
 import { db } from './db/models/index.js'
-import { userRoles } from './enums/user-roles.js'
+import { userRoles } from './common/enums/user-roles.js'
 import { verifyCredentials, registerUser, getAll, getById, updateById, passwordChange, passwordReset, deleteUser } from './route-handlers.js'
 
 const app = express();
