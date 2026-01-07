@@ -32,19 +32,19 @@ export class UsersService {
 		return this.http.get<User[]>(`${this.apiUrl}`);
 	}
 
-	getUserById(userId: number): Observable<User> {
-		return this.http.get<User>(`${this.apiUrl}/${userId}`);
+	getUserById(): Observable<User> {
+		return this.http.get<User>(`${this.apiUrl}/user`);
 	}
 
 	updateUser(user: User) : Observable<User> {
-		return this.http.put<User>(`${this.apiUrl}/${user.id}`, user);
+		return this.http.put<User>(`${this.apiUrl}/user`, user);
 	}
-
+	
+	passwordChange(data: { password: string, newPassword: string, newPasswordRepeat: string }) : Observable<any> {
+		return this.http.post<string>(`${this.apiUrl}/user/passwordChange`, data);
+	
+	}
 	passwordReset(userId: number) : Observable<string> {
 		return this.http.post<string>(`${this.apiUrl}/passwordReset`, { "id": userId });
-	}
-
-	passwordChange(userId: number, data: { password: string, newPassword: string, newPasswordRepeat: string }) : Observable<any> {
-		return this.http.post(`${this.apiUrl}/${userId}/passwordChange`, data);
 	}
 }

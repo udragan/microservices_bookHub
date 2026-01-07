@@ -1,12 +1,13 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import { Observable } from 'rxjs';
 
+import { AppRoutes } from '../../app.routes';
+import { User } from '../../core/models/user.model';
 import { environment } from '../../../environments/environment';
 import { JwtUser } from './jwtUser';
-import { AppRoutes } from '../../app.routes';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

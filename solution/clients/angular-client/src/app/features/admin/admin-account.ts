@@ -68,7 +68,7 @@ export class AdminAccount implements OnInit {
 			this.authService.logout();
 		}
 
-		this.userService.getUserById(userId).subscribe({
+		this.userService.getUserById().subscribe({
 			next: response => {
 				this.currentUser = response;
 				this.formUpdateAccount.controls.email.setValue(response.email);
@@ -115,13 +115,13 @@ export class AdminAccount implements OnInit {
 		const newPasswordRepeat = this.formPasswordChange.controls.newPasswordRepeat.value;
 
 		if (password && newPassword && newPasswordRepeat) {
-			this.userService.passwordChange(this.currentUser!.id, { password, newPassword, newPasswordRepeat }).subscribe({
-				next: _ => {
+			this.userService.passwordChange({ password, newPassword, newPasswordRepeat }).subscribe({
+				next: response => {
 					this.showChangePasswordDialogSignal.set(false);
 					this.messageService.add({ 
 						severity: 'success', 
 						summary: 'Confirmed', 
-						detail: `${this.currentUser!.email} password changed successfully.` 
+						detail: `${this.currentUser!.email} ${response.message}` 
 					})
 				},
 				error: e => console.log(e)
