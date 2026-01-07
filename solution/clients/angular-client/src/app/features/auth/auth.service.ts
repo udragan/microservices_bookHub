@@ -5,7 +5,6 @@ import { jwtDecode } from 'jwt-decode';
 import { Observable } from 'rxjs';
 
 import { AppRoutes } from '../../app.routes';
-import { User } from '../../core/models/user.model';
 import { environment } from '../../../environments/environment';
 import { JwtUser } from './jwtUser';
 
