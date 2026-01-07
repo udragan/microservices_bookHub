@@ -8,7 +8,6 @@
 						<label for="email">Email Address</label>
 					</p-floatlabel>
 				</div>
-
 				<div class="flex flex-column gap-1">
 					<p-floatlabel  variant="on">
 						<input pInputText id="name" formControlName="name" class="w-full" />
@@ -19,8 +18,13 @@
 						<small class="p-error ml-2">Name is required.</small>
 					}
 				</div>
+				<div class="flex flex-column gap-1">
+					<p-button [rounded]="true" label="Change password" styleClass="w-full" (onClick)="showChangePasswordDialogSignal.set(true)" />
+				</div>
 
-				<p-button type="submit" [rounded]="true" [disabled]="formUpdateAccount.invalid" label="Save" styleClass="w-full" />
+				<div class="flex flex-column p-2 pt-3 border-top-1 surface-border mt-4">
+					<p-button type="submit" [rounded]="true" [disabled]="formUpdateAccount.invalid || !formUpdateAccount.dirty" styleClass="w-full" label="Save" />
+				</div>
 			</form>
 
 			<div class="flex flex-column align-items-center gap-3 pr-4">
@@ -33,4 +37,27 @@
 		</div>
 	</p-card>
 </div>
+
+<p-dialog header="Change password" [(visible)]="showChangePasswordDialogSignal" [modal]="true">
+	<form [formGroup]="formPasswordChange" (submit)="passwordChange()">
+		<div class="flex flex-column gap-4 pt-2">
+			<p-floatlabel variant="on">			
+				<input id="password" pInputText formControlName="password" class="w-full" />
+				<label for="password">Current password</label>
+			</p-floatlabel>
+			<p-floatlabel variant="on">			
+				<input id="newPassword" pInputText formControlName="newPassword" class="w-full" />
+				<label for="newPassword">New password</label>
+			</p-floatlabel>
+			<p-floatlabel variant="on">			
+				<input id="newPasswordRepeat" pInputText formControlName="newPasswordRepeat" class="w-full" />
+				<label for="role">Retype new password</label>
+			</p-floatlabel>
+		</div>
+		<div class="flex justify-content-end gap-2 pt-3 border-top-1 surface-border mt-4">
+			<p-button type="submit" [rounded]="true" class="flex flex-column w-full" label="Change" />
+		</div>
+	</form>
+</p-dialog>
+
 <p-toast pRipple position="bottom-right" />

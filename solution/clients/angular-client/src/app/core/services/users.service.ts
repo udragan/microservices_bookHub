@@ -43,4 +43,8 @@ export class UsersService {
 	passwordReset(userId: number) : Observable<string> {
 		return this.http.post<string>(`${this.apiUrl}/passwordReset`, { "id": userId });
 	}
+
+	passwordChange(userId: number, data: { password: string, newPassword: string, newPasswordRepeat: string }) : Observable<any> {
+		return this.http.post(`${this.apiUrl}/${userId}/passwordChange`, data);
+	}
 }

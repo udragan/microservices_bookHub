@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { MessageService } from "primeng/api";
 import { Avatar } from "primeng/avatar";
 import { Button } from "primeng/button";
 import { Card } from "primeng/card";
+import { Dialog } from 'primeng/dialog';
 import { FloatLabel } from "primeng/floatlabel";
 import { FileUpload, FileUploadHandlerEvent } from "primeng/fileupload";
 import { InputText } from 'primeng/inputtext';
@@ -21,6 +22,7 @@ import { UsersService } from "../../core/services/users.service";
 		Avatar,
 		Button,
 		Card,
+		Dialog,
 		FileUpload,
 		FloatLabel,
 		FormsModule,
@@ -35,21 +37,26 @@ import { UsersService } from "../../core/services/users.service";
 	styleUrl: './admin-account.scss'
 })
 export class AdminAccount implements OnInit {
-
 	private authService = inject(AuthService);
 	private mediaService = inject(MediaService);
 	private messageService = inject(MessageService);
 	private userService = inject(UsersService);
 
 	private currentUser: User | null = null;
-	
 	protected avatarUrlSignal = this.userService.avatarUrlSignal;
+	protected showChangePasswordDialogSignal = signal(false);	
 
 	constructor() { }
 
 	protected readonly formUpdateAccount = new FormGroup({
 		email: new FormControl({ value: '', disabled: true }, [Validators.required, Validators.email]),
 		name: new FormControl('', Validators.required),
+	});
+
+	protected readonly formPasswordChange = new FormGroup({
+		password: new FormControl('', [Validators.required]),
+		newPassword: new FormControl('', [Validators.required]),
+		newPasswordRepeat: new FormControl('', [Validators.required]),
 	});
 	
 	// ------------------------------------------------------------------------
@@ -71,7 +78,7 @@ export class AdminAccount implements OnInit {
 		})
 	}
 
-	onUploadAvatar(event: FileUploadHandlerEvent) {
+	onUploadAvatar(event: FileUploadHandlerEvent) : void {
 		const file = event.files[0];
 		const formData = new FormData();
 		formData.append('file', file, file.name);
@@ -91,6 +98,7 @@ export class AdminAccount implements OnInit {
 		this.currentUser!.name = this.formUpdateAccount.controls.name.value!;
 		this.userService.updateUser(this.currentUser!).subscribe({
 			next: _ => {
+				this.formUpdateAccount.markAsPristine();
 				this.messageService.add({ 
 					severity: 'success', 
 					summary: 'Confirmed', 
@@ -99,5 +107,25 @@ export class AdminAccount implements OnInit {
 			},
 			error: e => { console.log(e) }
 		})
+	}
+
+	passwordChange() : void {
+		const password = this.formPasswordChange.controls.password.value;
+		const newPassword = this.formPasswordChange.controls.newPassword.value;
+		const newPasswordRepeat = this.formPasswordChange.controls.newPasswordRepeat.value;
+
+		if (password && newPassword && newPasswordRepeat) {
+			this.userService.passwordChange(this.currentUser!.id, { password, newPassword, newPasswordRepeat }).subscribe({
+				next: _ => {
+					this.showChangePasswordDialogSignal.set(false);
+					this.messageService.add({ 
+						severity: 'success', 
+						summary: 'Confirmed', 
+						detail: `${this.currentUser!.email} password changed successfully.` 
+					})
+				},
+				error: e => console.log(e)
+			});
+		}
 	}
 }

@@ -67,7 +67,7 @@ export class AdminUsers implements OnInit {
 	}
 
 	editUser(user: User) {
-		this.selectedUserSignal.set({ ...user }); 
+		this.selectedUserSignal.set({ ...user });
 		this.displayDialogSignal.set(true);
 	}
 
@@ -103,7 +103,7 @@ export class AdminUsers implements OnInit {
 						this.messageService.add({ 
 							severity: 'success', 
 							summary: 'Confirmed', 
-							detail: `${item.email} reset password successfully.` 
+							detail: `${item.email} reset password successfully.`
 						});
 					},
 					error: e => {
