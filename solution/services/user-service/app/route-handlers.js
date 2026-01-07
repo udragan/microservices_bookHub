@@ -40,7 +40,7 @@ export async function getAll(request, response) {
 }
 
 export async function getById(request, response) {
-	const user = await User.findByPk(request.params.id);
+	const user = await User.findByPk(request.user.sub);
 	if (!user) {
 		return response.status(404).json({ message: 'User not found' });
 	}
@@ -48,8 +48,8 @@ export async function getById(request, response) {
 	response.json(userDto);
 }
 
-export async function updateUser(request, response) {
-	const user = await User.findByPk(request.params.id);
+export async function updateById(request, response) {
+	const user = await User.findByPk(request.user.sub);
 	if (!user) {
 		return response.status(404).json({ message: 'User not found' });
 	}
@@ -64,7 +64,7 @@ export async function updateUser(request, response) {
 }
 
 export async function passwordChange(request, response) {
-	const user = await User.findByPk(request.params.id);
+	const user = await User.findByPk(request.user.sub);
 	if (!user) {
 		return response.status(404).json({ message: 'User not found' });
 	}
