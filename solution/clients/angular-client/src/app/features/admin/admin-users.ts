@@ -61,7 +61,11 @@ export class AdminUsers implements OnInit {
 			},
 			error: e => {
 				this.loading = false;
-				console.log(e)
+				this.messageService.add({ 
+					severity: 'error', 
+					summary: 'Error', 
+					detail: `Failed to load users: ${e.error.message}`
+				});
 			}
 		});
 	}
@@ -74,15 +78,24 @@ export class AdminUsers implements OnInit {
 	saveUser() {
 		const updatedUser = this.selectedUserSignal();
 		if (updatedUser) {
-			this.userService.updateUser(updatedUser).subscribe({
+			this.userService.updateUserById(updatedUser).subscribe({
 				next: _ => {
 					this.users.update(prev => 
 						prev.map(u => u.id === updatedUser.id ? updatedUser : u)
 					);
 					this.displayDialogSignal.set(false);
+					this.messageService.add({ 
+						severity: 'success', 
+						summary: 'Confirmed', 
+						detail: `Save succeeded`
+					});
 				},
 				error: e => {
-					console.log(e)
+					this.messageService.add({ 
+						severity: 'error', 
+						summary: 'Error', 
+						detail: `Save failed: ${e.error.message}`
+					});
 				}
 			});	
 		}
@@ -107,13 +120,15 @@ export class AdminUsers implements OnInit {
 						});
 					},
 					error: e => {
-						console.log(e);
+						this.messageService.add({ 
+							severity: 'error', 
+							summary: 'Error', 
+							detail: `Password change failed: ${e.error.message}`
+						});
 					}
 				})
 			},
-			reject: () => {
-				console.log('Rejected!');
-			}
+			reject: () => { }
 		});
   	}
 }

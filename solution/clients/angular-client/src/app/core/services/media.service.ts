@@ -19,7 +19,7 @@ export class MediaService {
 	
 	// do not use ServiceResponse since it is not a text protocol
 	getAvatar(): Observable<Blob> {
-		return this.http.get<Blob>(`${this.apiUrl}/avatar`);
+		return this.http.get(`${this.apiUrl}/avatar`, {responseType: 'blob'});
 	}
 
 	uploadAvatar(data: FormData) : Observable<ServiceResponse<null>> {

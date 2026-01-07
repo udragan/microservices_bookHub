@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet, RouterLink, Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 
-import { MenuItem, SharedModule } from 'primeng/api';
+import { MenuItem, MessageService, SharedModule } from 'primeng/api';
 import { Avatar } from 'primeng/avatar'
 import { Button } from 'primeng/button'
 import { Menu } from 'primeng/menu'
+import { Toast } from 'primeng/toast';
 import { Toolbar } from 'primeng/toolbar'
 
 import { AppRoutes } from '../../app.routes';
@@ -23,10 +24,14 @@ import { UsersService } from '../../core/services/users.service';
 		Button,
 		CommonModule,
 		Menu,
+		Toast,
 		Toolbar,
 		RouterLink,
 		RouterOutlet,
 		SharedModule,
+	],
+	providers: [
+		MessageService
 	],
 	templateUrl:'./admin-main-layout.html',
 	styleUrl: './admin-main-layout.scss',
@@ -34,9 +39,11 @@ import { UsersService } from '../../core/services/users.service';
 export class AdminMainLayout implements OnInit {	
 	private authService = inject(AuthService);
 	private mediaService = inject(MediaService);
+	private messageService = inject(MessageService);
 	private route = inject(ActivatedRoute);
 	private router = inject(Router);
 	private userService = inject(UsersService);
+
 	protected avatarMenuItems: MenuItem[] | undefined;
 	protected avatarUrlSignal = this.userService.avatarUrlSignal;
 	protected captionSignal = signal<string>('');
@@ -72,8 +79,12 @@ export class AdminMainLayout implements OnInit {
 				const url = URL.createObjectURL(response);
 				this.userService.updateAvatar(url);
 			},
-			error: e => {
-				console.error(e)
+			error: e => {				
+				this.messageService.add({ 
+					severity: 'error', 
+					summary: 'Error', 
+					detail: `Media service not available: ${e.error.message}`
+				});
 			}
 		});
 	}

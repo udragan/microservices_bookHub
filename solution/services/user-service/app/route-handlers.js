@@ -41,7 +41,7 @@ export async function getAll(request, response) {
 	response.json(ServiceResponse.success(userDtos));
 }
 
-export async function getById(request, response) {
+export async function getMine(request, response) {
 	const user = await User.findByPk(request.user.sub);
 	if (!user) {
 		return response.status(404).json(ServiceResponse.fail('User not found'));
@@ -50,7 +50,7 @@ export async function getById(request, response) {
 	response.json(ServiceResponse.success(userDto));
 }
 
-export async function updateById(request, response) {
+export async function updateMine(request, response) {
 	const user = await User.findByPk(request.user.sub);
 	if (!user) {
 		return response.status(404).json(ServiceResponse.fail('User not found'));
@@ -65,7 +65,22 @@ export async function updateById(request, response) {
 	}
 }
 
-export async function passwordChange(request, response) {
+export async function updateById(request, response) {
+	const { id, name, role } = request.body;
+	const user = await User.findByPk(id);
+	if (!user) {
+		return response.status(404).json(ServiceResponse.fail('User not found'));
+	}
+	try {
+		await user.update({ "name": name, "role": role });
+		const userDto = toUserDto(user);
+		response.json(ServiceResponse.success(userDto));
+	} catch (err) {
+		response.status(400).json(ServiceResponse.fail(err.message));
+	}
+}
+
+export async function passwordChangeMine(request, response) {
 	const user = await User.findByPk(request.user.sub);
 	if (!user) {
 		return response.status(404).json(ServiceResponse.fail('User not found'));

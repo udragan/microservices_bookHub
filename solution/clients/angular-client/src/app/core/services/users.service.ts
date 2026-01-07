@@ -24,27 +24,31 @@ export class UsersService {
 
 	// ------------------------------------------------------------------------
 
-	updateAvatar(newAvatarUrl: string) {
+	updateAvatar(newAvatarUrl: string) : void {
 		const url = this.sanitizer.bypassSecurityTrustUrl(newAvatarUrl);
 		this.avatarUrlSignal.set(url);
 	}
 	
-	getAllUsers(): Observable<ServiceResponse<User[]>> {
+	getAllUsers() : Observable<ServiceResponse<User[]>> {
 		return this.http.get<ServiceResponse<User[]>>(`${this.apiUrl}`);
 	}
 
-	getUserById(): Observable<ServiceResponse<User>> {
+	updateUserById(user: User) : Observable<ServiceResponse<User>> {
+		return this.http.put<ServiceResponse<User>>(`${this.apiUrl}`, user);
+	}
+
+	getMine() : Observable<ServiceResponse<User>> {
 		return this.http.get<ServiceResponse<User>>(`${this.apiUrl}/user`);
 	}
 
-	updateUser(user: User) : Observable<ServiceResponse<User>> {
+	updateMine(user: User) : Observable<ServiceResponse<User>> {
 		return this.http.put<ServiceResponse<User>>(`${this.apiUrl}/user`, user);
 	}
 	
-	passwordChange(data: { password: string, newPassword: string, newPasswordRepeat: string }) : Observable<ServiceResponse<number>> {
-		return this.http.post<ServiceResponse<number>>(`${this.apiUrl}/user/passwordChange`, data);
-	
+	passwordChangeMine(data: { password: string, newPassword: string, newPasswordRepeat: string }) : Observable<ServiceResponse<number>> {
+		return this.http.post<ServiceResponse<number>>(`${this.apiUrl}/user/passwordChange`, data);	
 	}
+
 	passwordReset(userId: number) : Observable<ServiceResponse<null>> {
 		return this.http.post<ServiceResponse<null>>(`${this.apiUrl}/passwordReset`, { "id": userId });
 	}
