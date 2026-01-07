@@ -68,7 +68,7 @@ export class AdminAccount implements OnInit {
 			this.authService.logout();
 		}
 
-		this.userService.getUserById().subscribe({
+		this.userService.getMine().subscribe({
 			next: response => {
 				this.currentUser = response.data;
 				this.formUpdateAccount.controls.email.setValue(response.data.email);
@@ -84,19 +84,29 @@ export class AdminAccount implements OnInit {
 		formData.append('file', file, file.name);
 
 		this.mediaService.uploadAvatar(formData).subscribe({
-			next: response => 
-				{
-					const url = URL.createObjectURL(file);
-					this.userService.updateAvatar(url);
-					console.log('Upload success!', response);
-				},
-			error: e => { console.error('Upload failed', e) }
+			next: response => {				
+				const url = URL.createObjectURL(file);
+				this.userService.updateAvatar(url);
+				this.messageService.add({ 
+					severity: 'success', 
+					summary: 'Confirmed', 
+					detail: 'Upload succeeded'
+				});
+				console.log('Upload success!', response);
+			},
+			error: e => { 
+				this.messageService.add({ 
+					severity: 'error', 
+					summary: 'Error', 
+					detail: `Upload failed: ${e.error.message}`
+				});
+			}
 		});
 	}
 
 	saveChanges() : void {
 		this.currentUser!.name = this.formUpdateAccount.controls.name.value!;
-		this.userService.updateUser(this.currentUser!).subscribe({
+		this.userService.updateMine(this.currentUser!).subscribe({
 			next: _ => {
 				this.formUpdateAccount.markAsPristine();
 				this.messageService.add({ 
@@ -105,7 +115,13 @@ export class AdminAccount implements OnInit {
 					detail: `${this.currentUser!.email} updated successfully.` 
 				});
 			},
-			error: e => { console.log(e) }
+			error: e => {
+				this.messageService.add({ 
+					severity: 'error', 
+					summary: 'Error', 
+					detail: `Update failed: ${e.error.message}`
+				});
+			}
 		})
 	}
 
@@ -115,7 +131,7 @@ export class AdminAccount implements OnInit {
 		const newPasswordRepeat = this.formPasswordChange.controls.newPasswordRepeat.value;
 
 		if (password && newPassword && newPasswordRepeat) {
-			this.userService.passwordChange({ password, newPassword, newPasswordRepeat }).subscribe({
+			this.userService.passwordChangeMine({ password, newPassword, newPasswordRepeat }).subscribe({
 				next: response => {
 					this.showChangePasswordDialogSignal.set(false);
 					this.messageService.add({ 
@@ -124,7 +140,13 @@ export class AdminAccount implements OnInit {
 						detail: `${this.currentUser!.email} ${response.message}` 
 					})
 				},
-				error: e => console.log(e)
+				error: e => {
+					this.messageService.add({ 
+						severity: 'error', 
+						summary: 'Error', 
+						detail: `Password change failed: ${e.error.message}`
+					});
+				}
 			});
 		}
 	}

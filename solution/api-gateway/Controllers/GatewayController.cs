@@ -67,7 +67,8 @@ public class GatewayController(RoutingService routingService) : ControllerBase
 
 		if (!response.IsSuccessStatusCode)
 		{
-			return StatusCode((int)response.StatusCode);
+			string textContent = await response.Content.ReadAsStringAsync();
+			return StatusCode((int)response.StatusCode, textContent);
 		}
 
 		string contentType = response.Content.Headers.ContentType?.ToString() ?? "application/json";

@@ -5,7 +5,7 @@ import util from 'util';
 import { jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles } from './auth/authorization.js';
 import { db } from './db/models/index.js'
 import { userRoles } from './common/enums/user-roles.js'
-import { verifyCredentials, registerUser, getAll, getById, updateById, passwordChange, passwordReset, deleteUser } from './route-handlers.js'
+import { verifyCredentials, registerUser, getAll, getMine, updateMine, updateById, passwordChangeMine, passwordReset, deleteUser } from './route-handlers.js'
 
 const app = express();
 const port = 8002;
@@ -19,10 +19,11 @@ app.use(json());
 app.post('/internal/verify', verifyCredentials);
 app.post('/register', registerUser);
 app.get('/', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR), getAll);
-app.get('/user', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR, userRoles.USER), getById);
-app.put('/user', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.USER), updateById);
-app.post('/user/passwordChange', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR, userRoles.USER), passwordChange);
+app.put('/', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN), updateById);
 app.post('/passwordReset', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN), passwordReset);
+app.get('/user', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR, userRoles.USER), getMine);
+app.put('/user', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.USER), updateMine);
+app.post('/user/passwordChange', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.MODERATOR, userRoles.USER), passwordChangeMine);
 app.delete('/:id', jwtAuthMiddleware, jwtAuthMiddlewareSupportedRoles(userRoles.ADMIN, userRoles.USER), deleteUser);
 // #####################################
 
