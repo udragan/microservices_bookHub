@@ -34,7 +34,8 @@ export async function getAll(request, response) {
 	console.log(request.user);
 
 	const users = await User.findAll();
-	const userDtos = users.map(user => toUserDto(user));
+	const userDtos = users.map(user => toUserDto(user))
+		.sort((x, y) => x.id - y.id);
 	response.json(userDtos);
 }
 
