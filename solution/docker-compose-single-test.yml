@@ -1,0 +1,20 @@
+networks:
+  bookhub-network:
+    name: ${NETWORK_NAME}
+    driver: bridge
+
+services:
+  health-monitor-service:
+    container_name: ${HEALTH_MONITOR_SERVICE_CONTAINER_NAME}
+    image: ${HEALTH_MONITOR_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/health-monitor-service
+      dockerfile: ./Dockerfile
+    environment:
+      SHARED_SECRET: ${SHARED_SECRET}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_HEALTH_EXCHANGE: ${RABBITMQ_HEALTH_EXCHANGE}
+    networks:
+      - bookhub-network
+      
