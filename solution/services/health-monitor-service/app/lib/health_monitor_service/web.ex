@@ -13,8 +13,8 @@ defmodule HealthMonitorService.Web do
 	plug :dispatch
 
 	get "/health" do
-		require IEx
-		IEx.pry()
+		# require IEx
+		# IEx.pry()
 		send_resp(conn, 200, "health-monitor-service: OK")
 	end
 
