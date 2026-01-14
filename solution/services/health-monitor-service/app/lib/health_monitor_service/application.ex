@@ -14,8 +14,9 @@ defmodule HealthMonitorService.Application do
 		children = [
 			# Starts a worker by calling: HealthMonitorService.Worker.start_link(arg)
 			# {HealthMonitorService.Worker, arg}
-			HealthMonitorService.Web,
-			HealthMonitorService.HealthSubscriber
+			HealthMonitorService.Api.Web,
+			HealthMonitorService.PubSub.HealthSubscriber,
+			HealthMonitorService.Storage.Storage,
 		]
 
 		# See https://hexdocs.pm/elixir/Supervisor.html
@@ -26,6 +27,8 @@ defmodule HealthMonitorService.Application do
 
 	defp log_env do
 		rabbitmq_conf= Application.get_env(:health_monitor_service, :rabbitmq)
-		Logger.info("RABBITMQ = #{rabbitmq_conf}")
+		Logger.info("RABBITMQ_host = #{rabbitmq_conf[:host]}")
+		Logger.info("RABBITMQ_helth_exchange = #{rabbitmq_conf[:health_exchange]}")
+		Logger.info("RABBITMQ_helth_exchange_queue = #{rabbitmq_conf[:health_exchange_queue]}")
 	end
 end

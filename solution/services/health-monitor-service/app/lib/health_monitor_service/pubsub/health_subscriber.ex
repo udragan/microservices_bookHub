@@ -1,4 +1,4 @@
-defmodule HealthMonitorService.HealthSubscriber do
+defmodule HealthMonitorService.PubSub.HealthSubscriber do
 	use Broadway
 	require Logger
 
@@ -30,9 +30,15 @@ defmodule HealthMonitorService.HealthSubscriber do
 	@impl true
 	def handle_message(_, message, _) do
 		Logger.info("Health event: #{message.data}")
+		case Jason.decode(message.data) do
+			{:ok, decoded_map} ->
+				%{"serviceId" => service_id, "body" => body} = decoded_map
+				:ets.insert(:health_service_messages, {service_id, body})
+			{:error, _reason} ->
+				IO.puts("Failed to parse JSON")
+		end
 		message
 	end
-
 
 	def after_connect(channel) do
 		ensure_exchange(channel)

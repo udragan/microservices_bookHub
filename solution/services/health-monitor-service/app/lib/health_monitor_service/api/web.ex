@@ -1,4 +1,4 @@
-defmodule HealthMonitorService.Web do
+defmodule HealthMonitorService.Api.Web do
 	use Plug.Router
 
 	def child_spec(_opts) do
@@ -15,7 +15,11 @@ defmodule HealthMonitorService.Web do
 	get "/health" do
 		# require IEx
 		# IEx.pry()
-		send_resp(conn, 200, "health-monitor-service: OK")
+		data = HealthMonitorService.Storage.Storage.get_all_health()
+
+		conn
+		|> put_resp_content_type("application/json")
+		|> send_resp(200, Jason.encode!(data))
 	end
 
 	match _ do
