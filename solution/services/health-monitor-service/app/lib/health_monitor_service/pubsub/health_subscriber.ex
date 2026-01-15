@@ -32,8 +32,17 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 		Logger.info("Health event: #{message.data}")
 		case Jason.decode(message.data) do
 			{:ok, decoded_map} ->
-				%{"serviceId" => service_id, "body" => body} = decoded_map
-				:ets.insert(:health_service_messages, {service_id, body})
+				timestamp = case DateTime.from_iso8601(decoded_map["body"]["timestamp"]) do
+					{:ok, dt, _offset} -> dt
+					_ -> DateTime.MIN
+				end
+				structured_message = %HealthMonitorService.Models.ServiceStatus {
+					service_id: decoded_map["serviceId"],
+					timestamp: timestamp,
+					stats: decoded_map["body"]["stats"],
+					data: decoded_map["body"]["data"]
+				}
+				:ets.insert(:health_service_messages, {structured_message.service_id, structured_message})
 			{:error, _reason} ->
 				IO.puts("Failed to parse JSON")
 		end
