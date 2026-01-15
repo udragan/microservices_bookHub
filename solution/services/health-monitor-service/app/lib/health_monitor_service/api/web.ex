@@ -15,7 +15,9 @@ defmodule HealthMonitorService.Api.Web do
 	get "/health" do
 		# require IEx
 		# IEx.pry()
-		data = HealthMonitorService.Storage.Storage.get_all_health()
+		data = HealthMonitorService.Storage.Storage.get_services_health_map()
+
+		IO.inspect(data, label: "data")
 
 		conn
 		|> put_resp_content_type("application/json")
