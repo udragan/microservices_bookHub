@@ -1,5 +1,6 @@
 defmodule HealthMonitorService.PubSub.HealthSubscriber do
 	use Broadway
+	use HealthMonitorService.Common.Constants
 	require Logger
 
 	@initial_retry_delay 1000
@@ -42,7 +43,7 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 					stats: decoded_map["body"]["stats"],
 					data: decoded_map["body"]["data"]
 				}
-				:ets.insert(:health_service_messages, {structured_message.service_id, structured_message})
+				:ets.insert(@health_map, {structured_message.service_id, structured_message})
 			{:error, _reason} ->
 				IO.puts("Failed to parse JSON")
 		end

@@ -1,9 +1,6 @@
 defmodule HealthMonitorService.Storage.Storage do
 	use GenServer
-
-	@healthy_after 30
-	@stale_after 60
-	@health_map :health_service_messages
+	use HealthMonitorService.Common.Constants
 
 	def start_link(_) do
 		GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -33,8 +30,8 @@ defmodule HealthMonitorService.Storage.Storage do
 		diff = DateTime.diff(now, timestamp, :second)
 
 		cond do
-			diff <= @healthy_after -> :healthy
-			diff <= @stale_after -> :stale
+			diff <= @healthy_treshold -> :healthy
+			diff <= @stale_treshold -> :stale
 			true -> :offline
 		end
 	end
