@@ -3,8 +3,6 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 	use HealthMonitorService.Common.Constants
 	require Logger
 
-	@initial_retry_delay 1000
-	@max_retry_delay 64000
 	@health_exchange_backoff_key {:health_monitor_service, :health_exchange_backoff}
 
 	def start_link(_opts) do

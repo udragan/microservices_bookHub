@@ -10,29 +10,4 @@ defmodule HealthMonitorService.Storage.Storage do
 		:ets.new(@health_map, [:named_table, :public, :set, {:read_concurrency, true}, {:write_concurrency, true}])
 		{:ok, %{}}
 	end
-
-	def get_services_health_map do
-		services_health_map = :ets.tab2list(@health_map)
-			|> Enum.map(&process_service/1)
-			|> Map.new()
-		services_health_map
-	end
-
-	defp process_service({service_id, state}) do
-		timestamp = state.timestamp
-		calculated_status = set_service_state_from_timestamp(timestamp)
-		new_state = %{state | status: calculated_status}
-		{service_id, new_state}
-	end
-
-	defp set_service_state_from_timestamp(timestamp) do
-		now = DateTime.utc_now()
-		diff = DateTime.diff(now, timestamp, :second)
-
-		cond do
-			diff <= @healthy_treshold -> :healthy
-			diff <= @stale_treshold -> :stale
-			true -> :offline
-		end
-	end
 end
