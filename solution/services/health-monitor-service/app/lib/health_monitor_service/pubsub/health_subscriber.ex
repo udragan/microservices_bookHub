@@ -4,6 +4,7 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 	require Logger
 
 	@health_exchange_backoff_key {:health_monitor_service, :health_exchange_backoff}
+	@default_message %{service_id: :unknown, timestamp: DateTime.MIN, status: :offline, stats: nil, data: nil}
 
 	def start_link(_opts) do
 		:persistent_term.put(@health_exchange_backoff_key, 0)
@@ -31,17 +32,23 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 		Logger.info("Health event: #{message.data}")
 		case Jason.decode(message.data) do
 			{:ok, decoded_map} ->
+				id = decoded_map["serviceId"]
 				timestamp = case DateTime.from_iso8601(decoded_map["body"]["timestamp"]) do
 					{:ok, dt, _offset} -> dt
 					_ -> DateTime.MIN
 				end
 				structured_message = %HealthMonitorService.Models.ServiceStatus {
-					service_id: decoded_map["serviceId"],
+					service_id: id,
 					timestamp: timestamp,
 					stats: decoded_map["body"]["stats"],
 					data: decoded_map["body"]["data"]
 				}
-				:ets.insert(@health_map, {structured_message.service_id, structured_message})
+				existing = case :ets.lookup(@health_map, id) do
+					[{^id, message}] -> message
+					[] -> @default_message
+				end
+				updated_message = Map.merge(existing, structured_message, fn _k, old, new -> new || old end)
+				:ets.insert(@health_map, {id, updated_message})
 			{:error, _reason} ->
 				IO.puts("Failed to parse JSON")
 		end
