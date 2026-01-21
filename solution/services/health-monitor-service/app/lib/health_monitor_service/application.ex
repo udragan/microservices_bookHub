@@ -17,6 +17,7 @@ defmodule HealthMonitorService.Application do
 			HealthMonitorService.Api.Web,
 			HealthMonitorService.PubSub.HealthSubscriber,
 			HealthMonitorService.Storage.Storage,
+			HealthMonitorService.Workers.StatusUpdater,
 		]
 
 		# See https://hexdocs.pm/elixir/Supervisor.html

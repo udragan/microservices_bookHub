@@ -1,5 +1,6 @@
 defmodule HealthMonitorService.Api.Web do
 	use Plug.Router
+	use HealthMonitorService.Common.Constants
 
 	def child_spec(_opts) do
 		Plug.Cowboy.child_spec(
@@ -15,7 +16,8 @@ defmodule HealthMonitorService.Api.Web do
 	get "/health" do
 		# require IEx
 		# IEx.pry()
-		data = HealthMonitorService.Storage.Storage.get_services_health_map()
+
+		data = :ets.tab2list(@health_map) |> Map.new()
 
 		IO.inspect(data, label: "data")
 
