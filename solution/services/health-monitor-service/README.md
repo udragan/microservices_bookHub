@@ -1,4 +1,4 @@
-- dependencies
+- dependencies in file:
 	mix.exs
 
 - fetch dependencies

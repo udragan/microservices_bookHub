@@ -23,6 +23,10 @@ defmodule HealthMonitorService.MixProject do
 	defp deps do
 		[
 			{:jason, "~> 1.4"},
+			{:joken, "~> 2.6"},
+	 		{:joken_jwks, "~> 1.6"},
+			{:hackney, "~> 1.18"},
+			{:tesla, "~> 1.4"},
 			{:plug_cowboy, "~> 2.7"},
 			{:broadway, "~> 1.0"},
 			{:broadway_rabbitmq, "~> 0.7"}

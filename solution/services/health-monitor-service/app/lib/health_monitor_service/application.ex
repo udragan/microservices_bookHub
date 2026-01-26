@@ -14,6 +14,7 @@ defmodule HealthMonitorService.Application do
 		children = [
 			# Starts a worker by calling: HealthMonitorService.Worker.start_link(arg)
 			# {HealthMonitorService.Worker, arg}
+			HealthMonitorService.Auth.JwksStrategy,
 			HealthMonitorService.Api.Web,
 			HealthMonitorService.PubSub.HealthSubscriber,
 			HealthMonitorService.Storage.Storage,
@@ -27,7 +28,11 @@ defmodule HealthMonitorService.Application do
 	end
 
 	defp log_env do
-		rabbitmq_conf= Application.get_env(:health_monitor_service, :rabbitmq)
+		auth_conf = Application.get_env(:health_monitor_service, :auth)
+		Logger.info("auth_jwks_url = #{auth_conf[:jwks_url]}")
+		Logger.info("auth_jwt_audience = #{auth_conf[:jwt_audience]}")
+
+		rabbitmq_conf = Application.get_env(:health_monitor_service, :rabbitmq)
 		Logger.info("RABBITMQ_host = #{rabbitmq_conf[:host]}")
 		Logger.info("RABBITMQ_helth_exchange = #{rabbitmq_conf[:health_exchange]}")
 		Logger.info("RABBITMQ_helth_exchange_queue = #{rabbitmq_conf[:health_exchange_queue]}")
