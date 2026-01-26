@@ -10,6 +10,7 @@ defmodule HealthMonitorService.Api.Web do
 		)
 	end
 
+	plug HealthMonitorService.Auth.Authorization
 	plug :match
 	plug :dispatch
 
@@ -18,8 +19,7 @@ defmodule HealthMonitorService.Api.Web do
 		# IEx.pry()
 
 		data = :ets.tab2list(@health_map) |> Map.new()
-
-		IO.inspect(data, label: "data")
+		#IO.inspect(data, label: "data")
 
 		conn
 		|> put_resp_content_type("application/json")
