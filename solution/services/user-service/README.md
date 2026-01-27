@@ -12,6 +12,10 @@
     navigate to root (user-service)
     > node ./app/server.js
 
+- rabbitMQ credentials
+	user: guest
+	pass: guest
+
 
 ----------------------------------------
 naming conventions:

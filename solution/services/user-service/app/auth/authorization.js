@@ -29,12 +29,12 @@ function jwtAuthMiddleware(req, res, next) {
     if (!token) return res.status(401).json({ error: 'Missing token' });
 
     verify(token, getKey, {
-        algorithms: ['RS256'], // Use your provider's algorithm
+        algorithms: ['RS256'],
     }, (err, decoded) => {
         if (err) {
             return res.status(401).json({ error: 'Invalid token' });
         }
-        req.user = decoded; // You can access `req.user` in your routes
+        req.user = decoded; // accessable in routes through 'req.user'
         next();
     });
 }
