@@ -42,6 +42,8 @@ services:
       context: ./services/health-monitor-service
       dockerfile: ./Dockerfile
     environment:
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
       RABBITMQ_HEALTH_EXCHANGE: ${RABBITMQ_HEALTH_EXCHANGE}
     networks:
