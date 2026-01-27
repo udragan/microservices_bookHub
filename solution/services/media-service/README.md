@@ -5,7 +5,7 @@ source venv/bin/activate 	// linux
 > pip install -r requirements.txt
 
 - run service (from root folder):
-> uvicorn app.main:app --port 8010 --reload
+> uvicorn app.main:app --port 8011 --reload
 
 
 ----------------------------------------

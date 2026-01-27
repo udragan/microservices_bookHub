@@ -9,7 +9,7 @@ from app.route_handlers import upload_avatar, get_avatar, remove_avatar
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logging.info("✅ Server listening on port 8010")
+    logging.info("✅ Server listening on port 8011")
     yield
     logging.info("👋 Server shutdown.")
 

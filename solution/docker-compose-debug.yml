@@ -43,11 +43,15 @@ services:
     ports:
       - 6004:27017
 
+  health-monitor-service:
+    ports:
+      - 8010:8010
+
   mediaservice:
     build:
       dockerfile: ./Dockerfile-debug
     ports:
-      - 8010:8010
+      - 8011:8011
       - 5678:5678    # debuger port
 
   angularclient:
