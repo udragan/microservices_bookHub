@@ -11,9 +11,13 @@ dotenv.config({path: env_path});
 export const DATABASE_URL = process.env.DATABASE_URL;
 export const JWKS_URL = process.env.JWKS_URL;
 export const JWT_AUDIENCE = process.env.JWT_AUDIENCE;
+export const RABBITMQ_HOST = process.env.RABBITMQ_HOST;
+export const RABBITMQ_HEALTH_EXCHANGE = process.env.RABBITMQ_HEALTH_EXCHANGE;
 
 console.log("environment variables:");
 console.log("DATABASE_URL:", DATABASE_URL);
 console.log("JWKS_URL:", JWKS_URL);
 console.log("JWT_AUDIENCE:", JWT_AUDIENCE);
+console.log("RABBITMQ_HOST:", RABBITMQ_HOST);
+console.log("RABBITMQ_HEALTH_EXCHANGE:", RABBITMQ_HEALTH_EXCHANGE);
 console.log("----------------------");
