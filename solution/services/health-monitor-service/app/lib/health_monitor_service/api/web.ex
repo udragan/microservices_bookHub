@@ -6,7 +6,7 @@ defmodule HealthMonitorService.Api.Web do
 		Plug.Cowboy.child_spec(
 			scheme: :http,
 			plug: __MODULE__,
-			options: [port: 8005]
+			options: [port: 8010]
 		)
 	end
 
