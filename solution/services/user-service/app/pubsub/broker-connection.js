@@ -1,6 +1,6 @@
 import amqp from "amqplib";
 
-import { RABBITMQ_HOST, RABBITMQ_HEALTH_EXCHANGE } from '../env.js';
+import { RABBITMQ_HOST, RABBITMQ_HEARTBEAT_EXCHANGE } from '../env.js';
 
 let channel;
 let expBackoff = 1000;
@@ -13,7 +13,7 @@ export async function connectBroker() {
 			const connection = await amqp.connect("amqp://" + RABBITMQ_HOST);
 			channel = await connection.createChannel();
 		
-			await channel.assertExchange(RABBITMQ_HEALTH_EXCHANGE, "fanout", { durable: false });
+			await channel.assertExchange(RABBITMQ_HEARTBEAT_EXCHANGE, "fanout", { durable: false });
 		
 			connection.on("close", () => {
 				channel =  undefined;

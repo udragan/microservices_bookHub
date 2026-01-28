@@ -18,7 +18,7 @@ defmodule HealthMonitorService.Api.Web do
 		# require IEx
 		# IEx.pry()
 
-		data = :ets.tab2list(@health_map) |> Map.new()
+		data = :ets.tab2list(@heartbeat_map) |> Map.new()
 		#IO.inspect(data, label: "data")
 
 		conn

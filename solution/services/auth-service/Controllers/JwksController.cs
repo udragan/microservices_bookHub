@@ -6,6 +6,7 @@ namespace AuthService.Controllers;
 
 [ApiController]
 [Route(".well-known/jwks.json")]
+[Produces("application/json")]
 public class JwksController(RsaSecurityKey key) : ControllerBase
 {
 	[HttpGet]

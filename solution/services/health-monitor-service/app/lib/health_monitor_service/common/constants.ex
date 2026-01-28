@@ -1,9 +1,9 @@
 defmodule HealthMonitorService.Common.Constants do
 	defmacro __using__(_opts) do
 		quote do
-			@health_map :health_service_messages
+			@heartbeat_map :heartbeat_service_messages
 
-			@health_status_recalculation_interval :timer.seconds(10)
+			@heartbeat_recalculation_interval :timer.seconds(10)
 			@healthy_treshold 30
 			@stale_treshold 60
 

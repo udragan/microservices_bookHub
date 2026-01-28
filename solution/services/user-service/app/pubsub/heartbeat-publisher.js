@@ -1,12 +1,12 @@
-import { RABBITMQ_HEALTH_EXCHANGE } from '../env.js';
+import { RABBITMQ_HEARTBEAT_EXCHANGE } from '../env.js';
 import { getBrokerChannel } from './broker-connection.js';
 
-export function startHealthPublisher(intervalMs = 5000) {
+export function startHeartbeatPublisher(intervalMs = 5000) {
 	setInterval(async () => {
 		try {
 			const channel = getBrokerChannel();
 
-			const healthState = {
+			const heartbeat = {
 				serviceId: "bookhub.user-service",
 				body: {
 					timestamp: new Date().toISOString(),
@@ -23,15 +23,15 @@ export function startHealthPublisher(intervalMs = 5000) {
 			};
 
 			channel.publish(
-				RABBITMQ_HEALTH_EXCHANGE,
-				"health_status",
-				Buffer.from(JSON.stringify(healthState)),
+				RABBITMQ_HEARTBEAT_EXCHANGE,
+				"heartbeat_status",
+				Buffer.from(JSON.stringify(heartbeat)),
 				{ persistent: false }
 			);
 
-			console.log("✅ Health state published");
+			console.log("✅ Heartbeat published");
 		} catch (err) {
-			console.error("❌ Health publish failed", err.message);
+			console.error("❌ Heartbeat publish failed", err.message);
 		}
 	}, intervalMs);
 }
