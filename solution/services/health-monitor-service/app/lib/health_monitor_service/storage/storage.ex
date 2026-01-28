@@ -7,7 +7,7 @@ defmodule HealthMonitorService.Storage.Storage do
 	end
 
 	def init(:ok) do
-		:ets.new(@health_map, [:named_table, :public, :set, {:read_concurrency, true}, {:write_concurrency, true}])
+		:ets.new(@heartbeat_map, [:named_table, :public, :set, {:read_concurrency, true}, {:write_concurrency, true}])
 		{:ok, %{}}
 	end
 end

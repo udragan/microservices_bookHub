@@ -16,7 +16,7 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 					connection: [
 						host: Application.get_env(:health_monitor_service, :rabbitmq, []) |> Keyword.get(:host)
 					],
-					queue: Application.get_env(:health_monitor_service, :rabbitmq, []) |> Keyword.get(:health_exchange_queue),
+					queue: Application.get_env(:health_monitor_service, :rabbitmq, []) |> Keyword.get(:heartbeat_exchange_queue),
 					after_connect: &after_connect/1
 				},
 				concurrency: 1
@@ -29,7 +29,7 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 
 	@impl true
 	def handle_message(_, message, _) do
-		Logger.info("Health event: #{message.data}")
+		Logger.info("Heartbeat event: #{message.data}")
 		case Jason.decode(message.data) do
 			{:ok, decoded_map} ->
 				id = decoded_map["serviceId"]
@@ -43,12 +43,12 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 					stats: decoded_map["body"]["stats"],
 					data: decoded_map["body"]["data"]
 				}
-				existing = case :ets.lookup(@health_map, id) do
+				existing = case :ets.lookup(@heartbeat_map, id) do
 					[{^id, message}] -> message
 					[] -> @default_message
 				end
 				updated_message = Map.merge(existing, structured_message, fn _k, old, new -> new || old end)
-				:ets.insert(@health_map, {id, updated_message})
+				:ets.insert(@heartbeat_map, {id, updated_message})
 			{:error, _reason} ->
 				IO.puts("Failed to parse JSON")
 		end
@@ -61,7 +61,7 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 	end
 
 	defp ensure_exchange(channel) do
-		exchange = Application.get_env(:health_monitor_service, :rabbitmq, []) |> Keyword.get(:health_exchange)
+		exchange = Application.get_env(:health_monitor_service, :rabbitmq, []) |> Keyword.get(:heartbeat_exchange)
 		case AMQP.Exchange.declare(channel, exchange, :fanout, durable: false) do
 			:ok ->
 				reset_backoff()
@@ -80,8 +80,8 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 	end
 
 	defp ensure_queue(channel) do
-		exchange = Application.get_env(:health_monitor_service, :rabbitmq, []) |> Keyword.get(:health_exchange)
-		queue = Application.get_env(:health_monitor_service, :rabbitmq, []) |> Keyword.get(:health_exchange_queue)
+		exchange = Application.get_env(:health_monitor_service, :rabbitmq, []) |> Keyword.get(:heartbeat_exchange)
+		queue = Application.get_env(:health_monitor_service, :rabbitmq, []) |> Keyword.get(:heartbeat_exchange_queue)
 		case AMQP.Queue.declare(channel, queue, durable: false, auto_delete: true) do
 			{:ok, _} ->
 				AMQP.Queue.bind(channel, queue, exchange)

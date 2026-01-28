@@ -7,7 +7,7 @@ import { db } from './db/models/index.js'
 import { userRoles } from './common/enums/user-roles.js'
 import { verifyCredentials, registerUser, getAll, getMine, updateMine, updateById, passwordChangeMine, passwordReset, deleteUser } from './route-handlers.js'
 import { connectBroker } from './pubsub/broker-connection.js';
-import { startHealthPublisher } from './pubsub/health-publisher.js';
+import { startHeartbeatPublisher } from './pubsub/heartbeat-publisher.js';
 
 const app = express();
 const port = 8002;
@@ -57,7 +57,7 @@ async function startServer() {
 		await runMigrations();
 
 		await connectBroker();
-		startHealthPublisher();
+		startHeartbeatPublisher();
 
 		// Recommendation is to use http inside docker network
 		// Use http for now since internal services are not to be exposed outside docker network!
