@@ -9,7 +9,9 @@
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development",
             "JWT_AUDIENCE": "bookhub-api-gateway",
-            "SHARED_SECRET": "dummy-secret"
+            "SHARED_SECRET": "dummy-secret",
+            "RABBITMQ_HOST": "localhost",
+            "RABBITMQ_HEARTBEAT_EXCHANGE": "bookhub.heartbeat_exchange"
         }
     }
   }
