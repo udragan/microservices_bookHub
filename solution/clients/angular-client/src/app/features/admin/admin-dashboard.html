@@ -1,65 +1,65 @@
-<!-- <div [style.display]="'flex'">
-	<aside
-		[tuiNavigationAside]="expanded()">
-		<header>
-			<button
-				iconStart="@tui.home"
-				tuiAsideItem
-				type="button"
-				[routerLink]="[routes.AdminDashboard]"
-				[routerLinkActiveOptions]="{ exact: true }">
-				<span tuiFade>Home</span>
-			</button>
-		</header>
-		<button
-			iconStart="@tui.users"
-			tuiAsideItem
-			type="button"
-			[routerLink]="[routes.AdminUsers]"
-			[routerLinkActiveOptions]="{ exact: true }">
-			<span tuiFade>Users</span>
-		</button>
-		<hr />
-		<footer>
-			<button
-				tuiAsideItem
-				type="button"
-				[iconStart]="expanded() ? '@tui.chevron-left' : '@tui.chevron-right'"
-				(click)="handleToggle()">
-				{{ expanded() ? 'Collapse' : 'Expand' }}
-			</button>
-		</footer>
-	</aside>
-	<main tuiNavigationMain>
-		<nav
-			compact
-			tuiSubheader
-			[style.position]="'sticky'">
-			<tui-breadcrumbs [itemsLimit]="10">
-				@for (item of breadcrumbs; track $index; let last = $last) {
-					<ng-container>
-						@if (last) {
-							<ng-container>
-								<strong
-									*tuiItem
-									tuiFade>
-									{{ item }}
-								</strong>
-							</ng-container>
-						}
-						@if (!last) {
-							<ng-container>
-								<button
-									*tuiItem
-									tuiLink
-									type="button">
-									{{ item }}
-								</button>
-							</ng-container>
-						}
-					</ng-container>
-				}
-			</tui-breadcrumbs>
-		</nav>
-	</main>
-</div> -->
+<div class="flex flex-column align-items-center">
+	<p-card [style]="{ 'max-width': '45rem', 'width': '100%' }">
+		<p-dataView [value]="healthSignal()" layout="grid">
+			<ng-template #grid let-items>
+				<div class="grid grid-nogutter">
+					@for (item of items; track item.serviceId) {
+						<div class="col-12 md:col-6 p-3">
+							<p-card class="shadow-2 border-round">
+								<ng-template pTemplate="header">
+									<div class="p-3 text-white border-round-top"
+										[ngClass]="{
+										'bg-green-500': item.status === 'healthy',
+										'bg-orange-500': item.status === 'stale',
+										'bg-red-500': item.status === 'offline',
+										'bg-gray-500': !item.status}">
+										<h3 class="m-0">{{ item.serviceId }}</h3>
+									</div>
+								</ng-template>
+
+								<div class="flex flex-column gap-3">
+									<div class="flex">
+										<div class="flex-1 text-right">Status:</div>
+										<div class="flex-1 text-left pl-3 font-semibold">{{ item.status }}</div>
+									</div>
+
+									<div class="flex">
+										<div class="flex-1 text-right">Last seen:</div>
+										<div class="flex-1 text-left pl-3 font-semibold">{{ item.timestamp | date: "short"}}</div>
+									</div>
+								</div>
+
+								@if (item.stats && (item.stats | keyvalue)!.length > 0) {
+									<div class="divider-container">
+										<p-divider></p-divider>
+									</div>
+
+									@for (stat of item.stats | keyvalue; track stat.key) {
+										<div class="flex">
+											<div class="flex-1 text-right">{{stat.key}}:</div>
+											<div class="flex-1 text-left pl-3 font-semibold">{{stat.value}}</div>
+										</div>
+									}
+								}
+								@if (item.data && (item.data | keyvalue)!.length > 0) {
+									<div class="divider-container">
+										<p-divider></p-divider>
+									</div>
+
+									@for (data of item.data | keyvalue; track data.key) {
+										<div class="flex">
+											<div class="flex-1 text-right">{{data.key}}:</div>
+											<div class="flex-1 text-left pl-3 font-semibold">{{data.value}}</div>
+										</div>
+									}
+								}
+							</p-card>
+						</div>
+					}
+				</div>
+			</ng-template>
+		</p-dataView>
+	</p-card>
+</div>
+
+<p-toast pRipple position="bottom-right" />

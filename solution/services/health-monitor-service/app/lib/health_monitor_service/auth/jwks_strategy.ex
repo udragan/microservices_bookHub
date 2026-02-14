@@ -36,11 +36,12 @@ defmodule HealthMonitorService.Auth.JwksStrategy do
 				:ets.insert(table, {kid, signer})
 				end)
 			Logger.info("JWKS: Successfully loaded #{length(keys)} keys into ETS.")
+			Process.send_after(self(), :fetch, 3600_000)
 		error ->
 			Logger.error("JWKS: Fetch failed: #{inspect(error)}")
+			Process.send_after(self(), :fetch, 60_000)
 		end
 
-		Process.send_after(self(), :fetch, 3600_000)
 		{:noreply, state}
 	end
 end
