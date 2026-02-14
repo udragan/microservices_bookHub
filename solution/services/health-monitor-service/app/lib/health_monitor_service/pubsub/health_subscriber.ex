@@ -33,15 +33,15 @@ defmodule HealthMonitorService.PubSub.HealthSubscriber do
 		case Jason.decode(message.data) do
 			{:ok, decoded_map} ->
 				id = decoded_map["serviceId"]
-				timestamp = case DateTime.from_iso8601(decoded_map["body"]["timestamp"]) do
+				timestamp = case DateTime.from_iso8601(decoded_map["timestamp"]) do
 					{:ok, dt, _offset} -> dt
 					_ -> DateTime.MIN
 				end
 				structured_message = %HealthMonitorService.Models.ServiceStatus {
 					service_id: id,
 					timestamp: timestamp,
-					stats: decoded_map["body"]["stats"],
-					data: decoded_map["body"]["data"]
+					stats: decoded_map["stats"],
+					data: decoded_map["data"]
 				}
 				existing = case :ets.lookup(@heartbeat_map, id) do
 					[{^id, message}] -> message

@@ -8,17 +8,15 @@ export function startHeartbeatPublisher(intervalMs = 5000) {
 
 			const heartbeat = {
 				serviceId: "bookhub.user-service",
-				body: {
-					timestamp: new Date().toISOString(),
-					stats: {
-						status: "healthy",
-						cpu: process.cpuUsage().user,
-						memory: process.memoryUsage().rss,
-						uptime: process.uptime(),
-					},
-					data: {
-						totalUsers: 4,
-					}
+				timestamp: new Date().toISOString(),
+				stats: {
+					status: "healthy",
+					cpu: process.cpuUsage().user,
+					memory: process.memoryUsage().rss,
+					uptime: process.uptime(),
+				},
+				data: {
+					totalUsers: 4,
 				}
 			};
 

@@ -6,10 +6,13 @@ from contextlib import asynccontextmanager
 
 from app.auth.authorization import JwtUser, get_current_user
 from app.route_handlers import upload_avatar, get_avatar, remove_avatar
+from app.pubsub.heartbeat_publisher import HeartbeatPublisher
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logging.info("✅ Server listening on port 8011")
+    heartbeat = HeartbeatPublisher()
+    heartbeat.start()
     yield
     logging.info("👋 Server shutdown.")
 
