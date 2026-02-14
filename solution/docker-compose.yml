@@ -189,6 +189,8 @@ services:
       MEDIA_STORAGE_PATH: ${MEDIA_SERVICE_MEDIA_STORAGE_PATH}
       JWKS_URL: ${JWKS_URL}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_HEARTBEAT_EXCHANGE: ${RABBITMQ_HEARTBEAT_EXCHANGE}
     volumes:
       - mediaservice_data:/app/Data
     networks:
