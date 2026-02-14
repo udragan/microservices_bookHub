@@ -5,6 +5,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
+Console.WriteLine("Environment variables:");
+Console.WriteLine($"ASPNETCORE_ENVIRONMENT: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
+Console.WriteLine($"CERT_PATH: {Environment.GetEnvironmentVariable("CERT_PATH")}");
+Console.WriteLine($"PORT: {Environment.GetEnvironmentVariable("PORT")}");
+Console.WriteLine("-------------------------------------------------");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Json logging format

@@ -39,19 +39,19 @@ class HeartbeatPublisher(threading.Thread):
                     routing_key = '',
                     body = message_body
                 )
-                print("Heartbeat sent")
+                print("[Heartbeat]: Published")
                 
                 time.sleep(10)
 
             except (pika.exceptions.AMQPConnectionError, pika.exceptions.AMQPChannelError):
-                print("Connection lost. Retrying in 5s...")
+                print("[Heartbeat]: Connection lost. Retrying in 5s...")
                 time.sleep(5)
             except Exception as e:
-                print(f"Unexpected error: {e}")
+                print(f"[Heartbeat]: Unexpected error: {e}")
                 time.sleep(10)
 
     def connect(self):
-        print("Connecting to RabbitMQ..."+ RABBITMQ_HOST)        
+        print("[Heartbeat]: Connecting to RabbitMQ..." + RABBITMQ_HOST)        
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(RABBITMQ_HOST))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange=RABBITMQ_HEARTBEAT_EXCHANGE, exchange_type='fanout')
