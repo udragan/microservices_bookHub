@@ -2,29 +2,36 @@ Project Title: "BookHub" – A Microservices-based Book Store
 
 🧩 Overview
 "BookHub" is an online book store where users can browse books, purchase them, and leave reviews. It includes:
-- User authentication
+- User registration (authentication/authorization)
 - Book catalog
-- Order processing
 - Reviews
-- Payment (mocked)
-- Notifications
+- Order processing (TODO)
+- Payment (mocked) (TODO)
+- Notifications (TODO)
+- Admin panel
 
 🧱 Microservices Breakdown
-Service Name	        Responsibilities	                              Communication
-Auth Service	        User registration, login (JWT), role management	REST
-User Service	        Stores user profile data	                      Internal API
-Book Service	        CRUD operations for books	                      REST
-Order Service	        Handles orders, cart management	                REST + Events
-Review Service	      Manages book reviews and ratings	              REST
-Payment Service	      Mock payment processing	                        REST + Events
-Notification Service	Sends email confirmations (mocked via console/logs)	Async Events (e.g., RabbitMQ)
+
+| Service Name         | Responsibilities                                | Communication |     |
+| -------------------- | ----------------------------------------------- | ------------- | --- |
+| Api Gateway          | Request orchestration                           | Rest          |  x  |
+| Auth Service         | User registration, login (JWT), role management | Rest + Events |  x  |
+| User Service         | Manage user profile data                        | Rest + Events |  x  |
+| Book Service         | Manage book data                                | Rest + Events |     |
+| Review Service       | Manage book review data                         | Rest + Events |     |
+| Stock Service        | Manage book stock                               | Rest + Events |     |
+| Order Service        | Manage orders                                   | Rest + Events |     |
+| Payment Service      | (mocked) Payment processing                     | Rest + Events |     |
+| Notification Service | Email confirmations                             | Events        |     |
+| HealthMonitor        | Gather health status of other services          | Rest + Events |     |
+| Media Service        | Stores user media files (avatars..)             | Rest + Events |     |
 
 🧪 Core Concepts
 ✅ Full Stack Architecture
-- Frontend (React/Next.js): Interface for users to view books, manage cart, place orders, leave reviews.
-- Backend (Node.js, Python, or Java): Microservices for domain logic.
+- Frontend (Angular/Blazor): Interface for users to view books, leave reviews, manage cart, place orders.
+- Backend (Node.js, Python, Java, Elixir, C#, Golang): Microservices for domain logic.
 - Database: PostgreSQL for core services, MongoDB for reviews (polyglot persistence).
-- API Gateway (Optional): For routing requests and central auth.
+- API Gateway: For routing requests and central auth.
 
 🐳 Containerization
 - Docker for each microservice.
@@ -32,7 +39,7 @@ Notification Service	Sends email confirmations (mocked via console/logs)	Async E
 
 🔐 Authentication
 - JWT-based auth handled by Auth Service.
-- Middleware on other services to validate JWT and roles.
+- Middleware on other services to validate JWT and roles/permissions.
 
 🧵 Event-Driven Architecture
 - RabbitMQ / Kafka for asynchronous communication.
@@ -45,16 +52,28 @@ Notification Service	Sends email confirmations (mocked via console/logs)	Async E
 - REST: Synchronous (e.g., Book → Review).
 - Events: Asynchronous (e.g., Order → Payment → Notification).
 
-🛠️ Tech Stack Suggestions
+🛠️ Tech Stack
 - Frontend: Angular(mobile) + Blazor(browser)
 - Backend: Node.js (Express or NestJS) or Python (FastAPI), Go, asp.Net
-- Auth: JWT + bcrypt + Role-based Access Control
-- Database: PostgreSQL, MongoDB
-- Message Broker: RabbitMQ or Kafka
-- Docker & Docker Compose
-- API Gateway (Optional): NGINX or Kong
-- CI/CD (Optional): GitHub Actions + Docker Hub
-
+- API Gateway (Asp.NetCore :8000)
+- Auth Service (Asp.NetCore :8001)
+- User Service (nodejs :8002)
+	- db (postgres :6002) with sequelize 
+- Book Service (python :8003)
+	- db (postgres :6003) with alembic
+- Review Service (golang :8004)
+	- db (mongodb :6004)
+- HealthMonitor Service (elixir :8010)
+	 message format:
+> 		{
+> 			"serviceId": "\<service-identifier>",
+> 			"timestamp": "\<utc ISOString>",
+> 			"stats": \[..]
+> 			"data": \[..]
+> 		}
+- Media Service (python :8011)
+- RabbitMQ message broker ( :5672)
+ 	
 🧪 Example Flow (for learning)
 - User signs up via Auth Service → JWT token issued.
 - User browses books → Book Service (GET /books)
@@ -65,7 +84,5 @@ Notification Service	Sends email confirmations (mocked via console/logs)	Async E
 - User reviews the book → Review Service (with Book ID)
 
 🧠 Bonus Ideas to Extend
-- Add inventory management (StockService)
-- Add admin dashboard
 - Integrate OpenTelemetry for monitoring
 - Add Rate limiting or caching (Redis)
