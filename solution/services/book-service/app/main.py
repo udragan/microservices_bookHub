@@ -6,11 +6,12 @@ from fastapi import FastAPI, Depends, status
 from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.authorization import JwtUser, get_current_user, get_service_auth
 from app.db.migrate import run_migrations
 from app.db.database import AsyncSessionLocal
-from app.auth.authorization import JwtUser, get_current_user, get_service_auth
-from app.route_handlers import create_book, delete_book, get_all_books, internal_get_books_snapshot
 from app.models.book import BookRequestBody
+from app.pubsub.heartbeat_publisher import HeartbeatPublisher
+from app.route_handlers import create_book, delete_book, get_all_books, internal_get_books_snapshot
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,6 +19,8 @@ async def lifespan(app: FastAPI):
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, run_migrations)
     logging.info("✅ Server listening on port 8003")
+    heartbeat = HeartbeatPublisher()
+    heartbeat.start()
     yield
     logging.info("👋 Server shutdown.")
 

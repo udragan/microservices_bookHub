@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.authorization import JwtUser, is_admin
 from app.db.modelsdb.book import Book
-from app.pubsub.publisher import publish_message
+from app.pubsub.book_publisher import publish_message
 from app.models.book import BookRequestBody
 from app.models.dtos.book_dto import BookDto
 

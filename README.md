@@ -26,7 +26,6 @@ Project Title: "BookHub" – A Microservices-based Book Store
 | HealthMonitor        | Gather health status of other services          | Rest + Events |     |
 | Media Service        | Stores user media files (avatars..)             | Rest + Events |     |
 
-🧪 Core Concepts
 ✅ Full Stack Architecture
 - Frontend (Angular/Blazor): Interface for users to view books, leave reviews, manage cart, place orders.
 - Backend (Node.js, Python, Java, Elixir, C#, Golang): Microservices for domain logic.
@@ -54,7 +53,6 @@ Project Title: "BookHub" – A Microservices-based Book Store
 
 🛠️ Tech Stack
 - Frontend: Angular(mobile) + Blazor(browser)
-- Backend: Node.js (Express or NestJS) or Python (FastAPI), Go, asp.Net
 - API Gateway (Asp.NetCore :8000)
 - Auth Service (Asp.NetCore :8001)
 - User Service (nodejs :8002)
