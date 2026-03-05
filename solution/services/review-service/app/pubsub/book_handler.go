@@ -52,7 +52,7 @@ func HandleBookDeleted(msg amqp091.Delivery) {
 	result, err := collection.DeleteOne(ctx, book)
 
 	if err != nil {
-		log.Printf("WARNING:	Delete failed for book with id: %d. %v", book.BookId, err)
+		log.Printf("WARN:	Delete failed for book with id: %d. %v", book.BookId, err)
 		return
 	} else if result.DeletedCount == 0 {
 		log.Printf("INFO:	No book with id: %d, nothing was deleted.", book.BookId)

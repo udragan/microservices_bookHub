@@ -19,10 +19,10 @@
 - apply migrations
 > migrate -path ./app/db/migrations -database "mongodb://dev:dev@localhost:6004/reviews" up
 
-- build service
-> go build
+- build service (from root)
+> go build ./app
 
-- run service
+- run service (from root)
 > .\app.exe
 
 ----------------------------------------
