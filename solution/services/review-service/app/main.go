@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
@@ -24,6 +25,7 @@ func main() {
 	db.ConnectDB()
 	db.RunMigrations()
 
+	go pubsub.StartHealthPublisher(context.Background())
 	go pubsub.StartBookConsumer()
 	go workers.StartBookSync()
 
