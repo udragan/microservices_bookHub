@@ -1,0 +1,224 @@
+networks:
+  bookhub-network:
+    name: ${NETWORK_NAME}
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.26.0.0/24
+
+services:
+  apigateway:
+    container_name: ${API_CONTAINER_NAME}
+    image: ${API_IMAGE_NAME}
+    build:
+      context: ./api-gateway
+      dockerfile: ./Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${API_ENV_ASPNETCORE_ENVIRONMENT}
+      CERT_PATH: ${API_ENV_CERT_PATH}
+      CERT_PASSWORD: ${API_ENV_CERT_PASSWORD}
+      PORT: ${API_ENV_PORT}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+    ports:
+      - ${API_ENV_PORT}:8000
+    networks:
+      - bookhub-network
+
+  rabbitMQ-broker:
+    container_name: ${RABBITMQ_BROKER_CONTAINER_NAME}
+    image: rabbitmq:3-management
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - bookhub-network
+
+  authservice:
+    container_name: ${AUTH_SERVICE_CONTAINER_NAME}
+    image: ${AUTH_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/auth-service
+      dockerfile: ./Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${AUTH_SERVICE_ENV_ASPNETCORE_ENVIRONMENT}
+      SHARED_SECRET: ${SHARED_SECRET}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_HEARTBEAT_EXCHANGE: ${RABBITMQ_HEARTBEAT_EXCHANGE}
+    networks:
+      - bookhub-network
+
+  userservice:
+    container_name: ${USER_SERVICE_CONTAINER_NAME}
+    image: ${USER_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/user-service
+      dockerfile: ./Dockerfile
+    depends_on:
+      userservice-db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${USER_SERVICE_ENV_NODE_ENV}
+      DATABASE_URL: ${USER_SERVICE_DB_CONNECTION_STRING}
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_HEARTBEAT_EXCHANGE: ${RABBITMQ_HEARTBEAT_EXCHANGE}
+    networks:
+      - bookhub-network
+
+  userservice-db:
+    container_name: ${USER_SERVICE_DB_CONTAINER_NAME}
+    image: postgres:16
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dock -d users"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    environment:
+      POSTGRES_USER: dock
+      POSTGRES_PASSWORD: dock
+      POSTGRES_DB: users
+    volumes:
+      - userservice_data:/var/lib/postgresql/data
+    networks:
+      - bookhub-network
+
+  bookservice:
+    container_name: ${BOOK_SERVICE_CONTAINER_NAME}
+    image: ${BOOK_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/book-service
+      dockerfile: ./Dockerfile
+    depends_on:
+      bookservice-db:
+        condition: service_healthy
+      rabbitMQ-broker:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${BOOK_SERVICE_DB_CONNECTION_STRING}
+      DATABASE_URL_MIGRATION: ${BOOK_SERVICE_DB_MIGRATION_CONNECTION_STRING}
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_HEARTBEAT_EXCHANGE: ${RABBITMQ_HEARTBEAT_EXCHANGE}
+      RABBITMQ_BOOKS_EXCHANGE: ${RABBITMQ_BOOKS_EXCHANGE}
+    networks:
+      - bookhub-network
+
+  bookservice-db:
+    container_name: ${BOOK_SERVICE_DB_CONTAINER_NAME}
+    image: postgres:16
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dock -d books"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    environment:
+      POSTGRES_USER: dock
+      POSTGRES_PASSWORD: dock
+      POSTGRES_DB: books
+    volumes:
+      - bookservice_data:/var/lib/postgresql/data
+    networks:
+      - bookhub-network
+
+  reviewservice:
+    container_name: ${REVIEW_SERVICE_CONTAINER_NAME}
+    image: ${REVIEW_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/review-service
+      dockerfile: ./Dockerfile
+    depends_on:
+      reviewservice-db:
+        condition: service_healthy
+      rabbitMQ-broker:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${REVIEW_SERVICE_DB_CONNECTION_STRING}
+      DATABASE_USERNAME: ${REVIEW_SERVICE_DB_USERNAME}
+      DATABASE_PASSWORD: ${REVIEW_SERVICE_DB_PASSWORD}
+      DATABASE_NAME: ${REVIEW_SERVICE_DB_NAME}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      BOOK_SERVICE_URL: ${BOOK_SERVICE_URL}
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      SHARED_SECRET: ${SHARED_SECRET}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_BOOKS_EXCHANGE: ${RABBITMQ_BOOKS_EXCHANGE}
+    networks:
+      - bookhub-network
+
+  reviewservice-db:
+    container_name: ${REVIEW_SERVICE_DB_CONTAINER_NAME}
+    image: mongo:latest
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${REVIEW_SERVICE_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${REVIEW_SERVICE_DB_PASSWORD}
+    volumes:
+      - reviewservice_data:/data/db
+    networks:
+      - bookhub-network
+
+  health-monitor-service:
+    container_name: ${HEALTH_MONITOR_SERVICE_CONTAINER_NAME}
+    image: ${HEALTH_MONITOR_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/health-monitor-service
+      dockerfile: ./Dockerfile
+    environment:
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_HEARTBEAT_EXCHANGE: ${RABBITMQ_HEARTBEAT_EXCHANGE}
+    networks:
+      - bookhub-network
+
+  mediaservice:
+    container_name:  ${MEDIA_SERVICE_CONTAINER_NAME}
+    image: ${MEDIA_SERVICE_IMAGE_NAME}
+    build:
+      context: ./services/media-service
+      dockerfile: ./Dockerfile
+    environment:
+      MEDIA_STORAGE_PATH: ${MEDIA_SERVICE_MEDIA_STORAGE_PATH}
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_HEARTBEAT_EXCHANGE: ${RABBITMQ_HEARTBEAT_EXCHANGE}
+    volumes:
+      - mediaservice_data:/app/Data
+    networks:
+      - bookhub-network
+
+  angularclient:
+    container_name: ${ANGULAR_CLIENT_CONTAINER_NAME}
+    image: ${ANGULAR_CLIENT_IMAGE_NAME}
+    build:
+      context: ./clients/angular-client
+      dockerfile: ./Dockerfile
+    environment:
+      API_URL: ${API_URL}
+      JWKS_URL: ${JWKS_URL}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+    ports:
+      - 8080:80
+    networks:
+      - bookhub-network
+
+volumes:
+  userservice_data:
+  bookservice_data:
+  reviewservice_data:
+  mediaservice_data:
