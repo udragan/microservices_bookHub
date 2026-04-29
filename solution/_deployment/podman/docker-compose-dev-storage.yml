@@ -1,0 +1,64 @@
+networks:
+  bookhub-network:
+    name: ${NETWORK_NAME}
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.26.0.0/24
+
+services:
+  rabbitMQ-broker:
+    container_name: ${RABBITMQ_BROKER_CONTAINER_NAME}
+    image: docker.io/library/rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - bookhub-network
+
+  userservice-dev-db:
+    container_name: ${USER_SERVICE_DB_CONTAINER_NAME}
+    image: docker.io/library/postgres:16
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: users
+    ports:
+      - "6002:5432"
+    volumes:
+      - userservice_data:/var/lib/postgresql/data
+    networks:
+      - bookhub-network
+
+  bookservice-dev-db:
+    container_name: ${BOOK_SERVICE_DB_CONTAINER_NAME}
+    image: docker.io/library/postgres:16
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: books
+    ports:
+      - "6003:5432"
+    volumes:
+      - bookservice_data:/var/lib/postgresql/data
+    networks:
+      - bookhub-network
+
+  reviewservice-dev-db:
+    container_name: ${REVIEW_SERVICE_DB_CONTAINER_NAME}
+    image: docker.io/library/mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: dev
+      MONGO_INITDB_ROOT_PASSWORD: dev
+    ports:
+      - "6004:27017"
+    volumes:
+      - reviewservice_data:/data/db
+    networks:
+      - bookhub-network
+
+
+volumes:
+  userservice_data:
+  bookservice_data:
+  reviewservice_data:
